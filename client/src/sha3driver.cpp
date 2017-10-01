@@ -46,6 +46,9 @@ void SHA3Driver::write_data(const uint32_t* data, size_t num_blocks) {
 }
 
 std::string SHA3Driver::read_hash() {
+    /**
+     * Reads hash returned by SHA-3 core from memory in binary format.
+     */
     // Create a string to hold the hash
     // Allocate enough memory to hold the hash
     std::string hash;
@@ -57,14 +60,33 @@ std::string SHA3Driver::read_hash() {
         // Split into bytes for string
         IntSplitter.num = value;
 
-        // Iterate over bytes in reverse order to get correct hash
+        // Iterate over bytes in reverse order to get correct hash ordering
         for (int j = 3; j >= 0; j--) {
             // Convert each byte to a single character and append to hash string
         	const uint8_t& c = IntSplitter.bytes[j];
-            hash.append(&hex[(c & 0xF0) >> 4], 1);
-            hash.append(&hex[c & 0xF], 1);
+            hash.append(c, 1);
         }
     }
 
     return hash;
+}
+
+std::string SHA3Driver::convert_hash(std::string& hash) {
+    /**
+     * Given a binary hash, returns the hash in readable ASCII hex format.
+     */
+    // TODO: test on Zynq
+    std::string readable;
+    readable.reserve(HASH_SIZE);
+
+    for (int i = 0; i < HASH_SIZE; i++) {
+        // Get char from underlying string ptr
+        const uint8_t& c = *(uint8_t *)(hash.data() + i);
+
+        // Convert each character to two hex digits
+        hash.append(&hex[(c & 0xF0) >> 4], 1);
+        hash.append(&hex[c & 0xF], 1);
+    }
+
+    return readable;
 }
