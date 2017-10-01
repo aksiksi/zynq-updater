@@ -1,7 +1,7 @@
 import protocol_pb2
 import socketserver
 
-from prep_image import PrepareImage
+import update_image
 
 class CustomTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
@@ -19,8 +19,13 @@ class CustomTCPHandler(socketserver.BaseRequestHandler):
 if __name__ == "__main__":
     HOST, PORT = 'localhost', 8080
 
-    p = PrepareImage(inputs=['a.txt', 'b.txt', 'c.txt'])
-    p.prepare(output_path='testimage.bin')
+    u = update_image.UpdateImage()
+    hash = u.build(inputs=['image/a.txt', 'image/b.txt', 'image/c.txt'], output_path='testimage.bin')
+    print(hash)
+
+    headers = u.read_header('testimage.bin')
+    print(headers)
+    print(update_image.convert_binary(headers[-1]))
 
     # server = socketserver.TCPServer((HOST, PORT), CustomTCPHandler)
 
