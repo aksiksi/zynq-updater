@@ -40,10 +40,25 @@ class PrepareImage:
         # Write output image header
         self.write_header(output_image, lengths)
 
+        # Write image body and body hash
+        self.write_body(output_image, lengths)
+
+    def write_header(self, output_image, lengths):
+        # Write input file lengths
+        for l in lengths:
+            # Convert each int into to 4 bytes in little endian (<) format
+            b = struct.pack('>I', l)
+            output_image.write(b)
+
+        # Reserve next 64 bytes for SHA-3 hash
+        alloc = bytes([0]*64)
+        output_image.write(alloc)
+
+    def write_body(self, output_image, lengths):
         # Compute Keccak 512 (slight variation on SHA-3)
         k = sha3.keccak_512()
 
-        # Write each file to output image and compute hash in parallel
+        # Write each file to output image while computing hash in parallel
         for each in self.inputs:
             with open(each, 'rb') as f:
                 # Read 1024 bytes from input file and write to output file
@@ -57,14 +72,3 @@ class PrepareImage:
         num_lengths = len(lengths) * 4
         output_image.seek(num_lengths)
         output_image.write(k.digest())
-
-    def write_header(self, output_image, lengths):
-        # Write input file lengths
-        for l in lengths:
-            # Convert each int into to 4 bytes in little endian (<) format
-            b = struct.pack('>I', l)
-            output_image.write(b)
-
-        # Reserve next 64 bytes for SHA-3 hash
-        alloc = bytes([0]*64)
-        output_image.write(alloc)
