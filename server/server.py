@@ -1,6 +1,8 @@
 import protocol_pb2
 import socketserver
 
+from prep_image import PrepareImage
+
 class CustomTCPHandler(socketserver.BaseRequestHandler):
     def handle(self):
         # self.request is the TCP socket connected to the client
@@ -16,8 +18,12 @@ class CustomTCPHandler(socketserver.BaseRequestHandler):
 
 if __name__ == "__main__":
     HOST, PORT = 'localhost', 8080
-    server = socketserver.TCPServer((HOST, PORT), CustomTCPHandler)
+
+    p = PrepareImage(inputs=['a.txt', 'b.txt', 'c.txt'])
+    p.prepare(output_path='testimage.bin')
+
+    # server = socketserver.TCPServer((HOST, PORT), CustomTCPHandler)
 
     # Activate the server; this will keep running until you
     # interrupt the program with Ctrl-C
-    server.serve_forever()
+    # server.serve_forever()
