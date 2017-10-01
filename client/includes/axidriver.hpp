@@ -4,7 +4,7 @@
     #include <sys/mman.h>
 #endif
 
-#include <stdint.h>
+#include "utils.hpp"
 
 // Zynq Linux kernel page size
 #define PAGE_SIZE 4096
@@ -26,11 +26,6 @@ enum AXIDevice {
     SHA3,
     COMP,
 };
-
-inline uint32_t swap_words(const uint32_t& value) {
-    // Swaps the two 16-bit words in a unsigned 32-bit dword
-	return ((value & 0x0000FFFF) << 0x10) | ((value & 0xFFFF0000) >> 0x10);
-}
 
 class AXIDriver {
 public:

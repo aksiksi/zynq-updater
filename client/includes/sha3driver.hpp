@@ -3,6 +3,7 @@
 #include <string>
 
 #include "axidriver.hpp"
+#include "utils.hpp"
 
 // SHA3 parameters (in bytes)
 #define INPUT_SIZE 64
