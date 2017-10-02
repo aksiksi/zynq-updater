@@ -18,8 +18,13 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) -flto $(LIBS) $^ -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+# | OBJDIR does not affect $^
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CC) $(CCFLAGS) -c $< -o $@
+
+# If OBJDIR doesn't exist, create it
+$(OBJDIR):
+	mkdir -p $@
 
 clean:
 	rm $(OBJDIR)/*.o
