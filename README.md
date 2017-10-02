@@ -20,3 +20,5 @@ Once this is done, navigate to `client/` and run `make` to build the client bina
 ### Server
 
 Install the `protobuf` Python package. The easiest way to do this on any platform is through Anaconda: `conda install protobuf`.
+
+You also need pysha3; install with `pip install pysha3`.
