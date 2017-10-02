@@ -63,7 +63,7 @@ std::string SHA3Driver::read_hash() {
         // Iterate over bytes in reverse order to get correct hash ordering
         for (int j = 3; j >= 0; j--) {
             // Convert each byte to a single character and append to hash string
-        	const uint8_t& c = IntSplitter.bytes[j];
+            const uint8_t& c = IntSplitter.bytes[j];
             hash.append(c, 1);
         }
     }

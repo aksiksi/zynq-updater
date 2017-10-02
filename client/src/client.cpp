@@ -1,7 +1,10 @@
 #include <iostream>
 #include <string>
 
-#include "protocol.pb.h"
+#define ASIO_STANDALONE // Do not use Boost
+#include "asio.hpp"
+
+#include "protocol.pb.h" // protobuf message headers
 
 #include "client.hpp"
 #include "sha3driver.hpp"
