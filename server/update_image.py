@@ -5,9 +5,7 @@ import binascii
 import sha3
 
 def convert_binary(b):
-    """
-        Convert a binary value (byte array) to a readable hex string.
-    """
+    """Convert a binary value (byte array) to a readable hex string."""
     return binascii.hexlify(b).decode()
 
 class UpdateImage:
@@ -52,13 +50,14 @@ class UpdateImage:
         lengths = [os.path.getsize(each) for each in inputs]
 
         # Create output image file on disk
-        output_image = open(output_path, 'wb')
+        with open(output_path, 'wb') as output_image:
+            # Write output image header
+            self.write_header(output_image, lengths)
 
-        # Write output image header
-        self.write_header(output_image, lengths)
+            # Write image body and body hash, return hash
+            hash = self.write_body(output_image, inputs, lengths)
 
-        # Write image body and body hash, return hash
-        return self.write_body(output_image, inputs, lengths)
+        return hash
 
     def read_header(self, image_path, num_fields=3):
         """
@@ -89,6 +88,7 @@ class UpdateImage:
         return header
 
     def write_header(self, output_image, lengths):
+        """Write header to output image (without the hash)."""
         # Write input file lengths
         for l in lengths:
             # Convert each int into to 4 bytes in little endian (<) format
@@ -100,6 +100,7 @@ class UpdateImage:
         output_image.write(alloc)
 
     def write_body(self, output_image, inputs, lengths):
+        """Write body to output image, and the hash of the body to the header of the output image."""
         # Compute Keccak 512 (slight variation on SHA-3)
         k = sha3.keccak_512()
 
