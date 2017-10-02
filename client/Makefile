@@ -18,7 +18,6 @@ all: $(TARGET)
 $(TARGET): $(OBJS)
 	$(CC) -flto $(LIBS) $^ -o $@
 
-# | OBJDIR does not affect $^
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CC) $(CCFLAGS) -c $< -o $@
 
