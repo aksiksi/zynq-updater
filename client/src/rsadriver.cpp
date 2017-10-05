@@ -14,20 +14,20 @@ std::vector<std::string> RSADriver::decrypt(std::string& ciphertext) {
      *     2. Decrypt each chunk using device private key (stored on RoT).
      *     3. Append chunk to plaintext string vector.
      */
-    const size_t num_chunks = encrypted.size() / RSA_CHUNK_SIZE;
+    const size_t num_chunks = ciphertext.size() / RSA_CHUNK_SIZE;
 
     // TODO: handle case of input not multiple of 512 bits
     // if (encrypted.size() % 64 != 0) {}
 
     // Get a pointer to underlying string data
     // We cast from char* to uint32_t* to process data in 32-bit chunks
-    const uint32_t* ptr = reinterpret_cast<const uint32_t *>(input.data());
+    const uint32_t* ptr = reinterpret_cast<const uint32_t *>(ciphertext.data());
 
     uint8_t rsa_done;
     std::string chunk;
     chunk.reserve(RSA_CHUNK_SIZE);
 
-    std::vector<std::string> plaintext
+    std::vector<std::string> plaintext;
     plaintext.reserve(num_chunks);
     
     for (int i = 0; i < num_chunks; i++) {
@@ -36,7 +36,7 @@ std::vector<std::string> RSADriver::decrypt(std::string& ciphertext) {
         this->write_chunk(ptr + (i * RSA_CHUNK_SIZE));
 
         // Select key for decryption
-        this->axi_driver.write(RSA_KEY_SELECT, DEVICE_KEY_NUM, AXIDevice::RSA)
+        this->axi_driver.write(RSA_KEY_SELECT, DEVICE_KEY_NUM, AXIDevice::RSA);
 
         // Start the RSA decryption process
         this->axi_driver.write(RSA_START_OFFSET, 1, AXIDevice::RSA);
@@ -50,7 +50,7 @@ std::vector<std::string> RSADriver::decrypt(std::string& ciphertext) {
         read_chunk(chunk);
 
         // Append to the final vector
-        plaintext.append(chunk);
+        plaintext.push_back(chunk);
     }
 
     return plaintext;
