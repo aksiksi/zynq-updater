@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "axidriver.hpp"
-#include "utils.hpp"
+#include "axidriver.hpp" // for AXIDriver class
+#include "utils.hpp" // for IntSplitter and swap_bytes()
 
 // SHA3 parameters (in bytes)
 #define INPUT_SIZE 64

@@ -1,5 +1,4 @@
 #include "axidriver.hpp"
-#include "sha3driver.hpp"
 
 #ifdef __linux__   
     #include <stdio.h>

@@ -1,11 +1,5 @@
 #include "sha3driver.hpp"
 
-// Converts from a 32-bit int to a 4 byte array
-union {
-    uint32_t num;
-    uint8_t bytes[4];
-} IntSplitter;
-
 void SHA3Driver::reset() {
     this->axi_driver.write(SHA3_RESET_OFFSET, 0x0, AXIDevice::SHA3);
 }
@@ -18,6 +12,9 @@ std::string SHA3Driver::compute_hash(std::string& input) {
     // We cast from char* to uint32_t* to process data in 32-bit chunks
     const size_t num_blocks = input.size() / 4;
     const uint32_t* ptr = reinterpret_cast<const uint32_t *>(input.data());
+
+    // TODO: handle case of input not multiple of 512 bits
+    // if (encrypted.size() % 64 != 0) {}
 
     // Write each dword to the SHA-3 FIFO address
     for (int i = 0; i < num_blocks; i++) {

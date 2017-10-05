@@ -1,10 +1,10 @@
 #pragma once
 
+#include <stdint.h>
+
 #ifdef __linux__
     #include <sys/mman.h>
 #endif
-
-#include "utils.hpp"
 
 // Zynq Linux kernel page size
 #define PAGE_SIZE 4096
