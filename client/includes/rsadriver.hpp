@@ -25,7 +25,7 @@ private:
     AXIDriver axi_driver;
 
     // Write a single 512 bit chunk for decryption
-    void write_chunk(const uint32_t* chunk);
+    void write_chunk(const uint32_t* chunk_ptr);
 
     // Read a single 512 bit chunk
     void read_chunk(std::string& plaintext);

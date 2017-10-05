@@ -56,7 +56,7 @@ std::vector<std::string> RSADriver::decrypt(std::string& ciphertext) {
     return plaintext;
 }
 
-void RSADriver::write_chunk(const uint32_t* chunk) {
+void RSADriver::write_chunk(const uint32_t* chunk_ptr) {
     /**
      * Given a 512-bit chunk, write it to the correct location to be used
      * in decryption by the RSA core.
@@ -65,7 +65,7 @@ void RSADriver::write_chunk(const uint32_t* chunk) {
     // Iterate over each dword in the chunk
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Perform little endian word swap
-        const uint32_t swapped = swap_words(*chunk++);
+        const uint32_t swapped = swap_words(*(chunk_ptr + i));
 
         // Write the word to the correct offset
         this->axi_driver.write(RSA_DATA_OFFSET + i, swapped, AXIDevice::RSA);
