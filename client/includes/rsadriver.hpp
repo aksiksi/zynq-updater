@@ -9,16 +9,17 @@
 
 // Relevant memory offsets for RSA-512 core (in bytes)
 #define RSA_DATA_OFFSET   0x00 // Points to least significant word in the 16 words of input
-#define RSA_COMPLETE  0x40
+#define RSA_COMPLETE      0x40
 #define RSA_KEY_SELECT    0x40
 #define RSA_START_OFFSET  0x44
 
 #define RSA_CHUNK_SIZE    64 // bytes
 
+// Indices of required keys as configured in PL (see RSA AXI driver implementation)
 enum RSAKey {
-    D = 1, // Device private key (decryption)
-    GU = 5, // Updating org public key (encryption)
-    GC = 6  // Confirming org public key (encryption)
+    D_PRV = 1, // Device private key (decryption)
+    GU_PUB = 5, // Updating org public key (encryption)
+    GC_PUB = 6  // Confirming org public key (encryption)
 };
 
 class RSADriver {
