@@ -92,6 +92,11 @@ std::string RSADriver::decrypt(const std::string& ciphertext, bool pkcsv15) {
 }
 
 std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
+    /**
+     * Given a plaintext string, strips all padding from the string and returns original message.
+     * 
+     * Removes the standard PKCS#1 v1.5 padding as well as the last chunk length padding.
+     */
     const int num_chunks = plaintext.size() / RSA_CHUNK_SIZE;
     
     std::string stripped;
@@ -100,7 +105,7 @@ std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
     for (int i = 0; i < num_chunks; i++) {
         // Get a substring with stripped padding (i.e., only chunk data)
         const int chunk_offset = (i * RSA_CHUNK_SIZE) + PKCSV15_PAD_SIZE;
-        const std::string& chunk = plaintext.substr(chunk_offset, PKCSV15_PAD_SIZE);
+        const std::string& chunk = plaintext.substr(chunk_offset, PKCSV15_CHUNK_SIZE);
 
         // Strip pad_size from start of chunk as well (if applicable)
         if (i == num_chunks-1) {
