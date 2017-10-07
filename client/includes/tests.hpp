@@ -1,3 +1,5 @@
+#pragma once
+
 #include "rsadriver.hpp"
 #include "sha3driver.hpp"
 
