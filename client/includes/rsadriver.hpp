@@ -1,8 +1,9 @@
 #pragma once
 
 #include <string>
-#include <stdint.h>
 #include <vector>
+
+#include <stdint.h>
 
 #include "axidriver.hpp" // for AXIDriver class
 #include "utils.hpp" // for IntSplitter and swap_bytes()
@@ -13,7 +14,12 @@
 #define RSA_KEY_SELECT    0x40
 #define RSA_START_OFFSET  0x44
 
-#define RSA_CHUNK_SIZE    64 // bytes
+#define RSA_CHUNK_SIZE     64 // bytes
+#define PKCSV15_CHUNK_SIZE 53 // bytes
+
+// PKCS#1 1.5 padding: 00 || 02 || 8 bytes of junk || 00
+#define PKCSV15_PAD_SIZE 11
+const char PKCSV15_PADDING[PKCSV15_PAD_SIZE] = {0x00, 0x02, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x00};
 
 // Indices of required keys as configured in PL (see RSA AXI driver implementation)
 enum RSAKey {
@@ -24,13 +30,16 @@ enum RSAKey {
 
 class RSADriver {
 public:
-    std::vector<std::string> decrypt(std::string& ciphertext);
-    std::vector<std::string> encrypt(std::string& plaintext, RSAKey key);
+    std::string decrypt(const std::string& ciphertext, bool pkcsv15);
+    std::string encrypt(const std::string& plaintext, RSAKey key, bool pkcsv15);
 private:
     AXIDriver axi_driver;
 
     // Encrypts or decrypts given data, based on provided key
-    std::vector<std::string> compute_rsa(std::string& data, RSAKey mode);
+    std::string compute_rsa(std::vector<std::string>& data, RSAKey key);
+
+    // Strip PKCS#1 v1.5 padding from a given decrypted plaintext
+    std::string strip_pkcsv15_padding(const std::string& plaintext);
 
     // Write a single 512 bit chunk for decryption
     void write_chunk(const uint32_t* chunk_ptr);
