@@ -53,11 +53,20 @@ class RSA512:
             chunk = ciphertext[i*CHUNK_SIZE:(i+1)*CHUNK_SIZE]
             decrypted = rsa.decrypt(chunk, self.prvkey)
             
-            # For last chunk, skip padding by using 0th index
+            # For last chunk, consider padding
             # Recall that chunk is left padded with [PAD_SIZE]*PAD_SIZE
             if i == num_chunks-1:
                 pad_size = decrypted[0]
-                decrypted = decrypted[pad_size:]
+                
+                # Check for valid padding based on first byte
+                count = 0
+                for j in range(pad_size):
+                    if decrypted[j] == pad_size:
+                        count += 1
+                
+                # If valid, strip first pad_size bytes from plaintext
+                if count == pad_size:
+                    decrypted = decrypted[pad_size:]
 
             # Append to final ciphertext
             plaintext += decrypted
