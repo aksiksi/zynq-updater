@@ -2,7 +2,6 @@ import math
 import binascii
 
 import rsa
-import rsakeys
 
 class RSA512:
     def __init__(self, pubkey, prvkey=None):
@@ -72,25 +71,3 @@ class RSA512:
             plaintext += decrypted
 
         return bytes(plaintext)
-
-def encrypt(infile='testimage.bin', outfile='testimage_enc.bin'):
-    """
-        Encrypts given file using RSA-512 in a block-by-block fashion.
-    """
-    pass
-
-def main():
-    r = RSA512(rsakeys.GU_PUB, rsakeys.GU_PRV)
-    message = b'Hello, world!'
-    enc = r.encrypt(message)
-    print(enc)
-    dec = r.decrypt(enc)
-    print(dec)
-
-    # Throws an error because no private key
-    r1 = RSA512(rsakeys.D_PUB)
-    enc1 = r1.encrypt(message)
-    r1.decrypt(enc1)
-
-if __name__ == '__main__':
-    main()
