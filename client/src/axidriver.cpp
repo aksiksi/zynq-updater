@@ -1,5 +1,7 @@
 #include "axidriver.hpp"
 
+#include <cstring>
+
 #ifdef __linux__   
     #include <stdio.h>
     #include <fcntl.h>
@@ -21,10 +23,17 @@
 #endif
 
 uint32_t AXIDriver::read(uint32_t offset, AXIDevice d) {
-    return *compute_offset(offset, d);
+    // Get pointer to correct offset
+    uint8_t* ptr = this->compute_offset(offset, d);
+
+    // Read 4 bytes into an int
+    uint32_t value;
+    std::memcpy(&value, ptr, 4);
+    
+    return value;
 }
 
 void AXIDriver::write(uint32_t offset, uint32_t value, AXIDevice d) {
-    uint32_t *data = this->compute_offset(offset, d);
-    *data = value;
+    uint8_t* ptr = this->compute_offset(offset, d);
+    std::memcpy(ptr, &value, 4);
 }

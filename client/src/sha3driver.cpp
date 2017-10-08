@@ -1,5 +1,7 @@
 #include "sha3driver.hpp"
 
+#include <cstring>
+
 void SHA3Driver::reset() {
     this->axi_driver.write(SHA3_RESET_OFFSET, 0x0, AXIDevice::SHA3);
 }
@@ -9,17 +11,22 @@ std::string SHA3Driver::compute_hash(std::string& input) {
     this->reset();
 
     // Get a pointer to underlying string data
-    // We cast from char* to uint32_t* to process data in 32-bit chunks
     const size_t num_blocks = input.size() / 4;
-    const uint32_t* ptr = reinterpret_cast<const uint32_t *>(input.data());
+    const uint8_t* ptr = reinterpret_cast<const uint8_t *>(input.data());
 
     // TODO: handle case of input not multiple of 512 bits
     // if (encrypted.size() % 64 != 0) {}
 
+    uint32_t value;
+
     // Write each dword to the SHA-3 FIFO address
     for (int i = 0; i < num_blocks; i++) {
+        // Read int from uint8_t *
+        std::memcpy(&value, ptr, 4);
+        ptr += 4;
+
     	// IMPORTANT: Perform a word swap to account for reading int in little endian form
-    	const uint32_t swapped = swap_words(*ptr++);
+    	const uint32_t swapped = swap_words(value);
         this->axi_driver.write(MSG_DATA_OFFSET, swapped, AXIDevice::SHA3);
     }
 
@@ -33,13 +40,6 @@ std::string SHA3Driver::compute_hash(std::string& input) {
 
     // Read out the resulting hash
     return this->read_hash();
-}
-
-void SHA3Driver::write_data(const uint32_t* data, size_t num_blocks) {
-    // TODO: this only handles a single 512 bit input
-    for (int i = 0; i < num_blocks; i++) {
-        this->axi_driver.write(MSG_DATA_OFFSET, *(data+i), AXIDevice::SHA3);
-    }
 }
 
 std::string SHA3Driver::read_hash() {
@@ -78,7 +78,7 @@ std::string SHA3Driver::convert_hash(std::string& hash) {
 
     for (int i = 0; i < HASH_SIZE; i++) {
         // Get char from underlying string ptr
-        const uint8_t& c = *(uint8_t *)(hash.data() + i);
+        const char& c = *(hash.data() + i);
 
         // Convert each character to two hex digits
         hash.append(&hex[(c & 0xF0) >> 4], 1);

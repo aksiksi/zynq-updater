@@ -26,7 +26,6 @@ public:
     std::string compute_hash(std::string& data);
 private:
     AXIDriver axi_driver;
-    void write_data(const uint32_t* data, size_t num_blocks);
     std::string read_hash();
     std::string convert_hash(std::string& hash);
 };

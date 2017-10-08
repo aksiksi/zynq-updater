@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __linux__
     #include <sys/mman.h>
@@ -66,18 +66,18 @@ private:
         uint8_t* get_mmap(uint32_t base_addr, size_t length);
     #endif
 
-    inline uint32_t* compute_offset(uint32_t offset, AXIDevice d) {
+    inline uint8_t* compute_offset(uint32_t offset, AXIDevice d) {
         /**
             Computes the offset (in bytes) relative to device base address.
-            Returns unsigned int pointer (32 bit) starting at that address.
+            Returns uint8_t pointer starting at that address.
         */
         switch (d) {
             case AXIDevice::RSA:
-                return reinterpret_cast<uint32_t *>(rsa_mem + offset);
+                return rsa_mem + offset;
             case AXIDevice::SHA3:
-                return reinterpret_cast<uint32_t *>(sha3_mem + offset);
+                return sha3_mem + offset;
             case AXIDevice::COMP:
-                return reinterpret_cast<uint32_t *>(comp_mem + offset);
+                return comp_mem + offset;
         }
     }
 };

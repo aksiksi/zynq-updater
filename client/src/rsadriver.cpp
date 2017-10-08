@@ -1,6 +1,6 @@
 #include "rsadriver.hpp"
 
-#include <iostream>
+#include <cstring>
 
 std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
     /**
@@ -30,12 +30,9 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
     // RSA completion flag
     uint8_t rsa_done;
 
-    int idx = 0;
-
     for (const std::string& chunk: data) {
         // Get a pointer to underlying string data
-        // We cast from char* to uint32_t* to process data in 32-bit chunks
-        const uint32_t* ptr = reinterpret_cast<const uint32_t *>(chunk.data());
+        const uint8_t* ptr = reinterpret_cast<const uint8_t *>(chunk.data());
 
         // Write the current 512-bit chunk to the core
         this->write_chunk(ptr);
@@ -56,8 +53,6 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
 
         // Append result to the final output string
         output.append(result);
-
-        idx++;
     }
 
     return output;
@@ -71,7 +66,7 @@ std::string RSADriver::decrypt(const std::string& ciphertext) {
      * Arguments:
      *     - ciphertext: encrypted data (string)
      * 
-     * Returns: plaintext as vector<string>
+     * Returns: plaintext as std::string
      */
     const int num_chunks = ciphertext.size() / RSA_CHUNK_SIZE;
     
@@ -196,16 +191,22 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
     return compute_rsa(data, key);
 }
 
-void RSADriver::write_chunk(const uint32_t* chunk_ptr) {
+void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
     /**
      * Given a 512-bit chunk, write it to the correct location to be used
      * in decryption by the RSA core.
      */
 
+    uint32_t value;
+
     // Iterate over each dword in the chunk
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
+        // Read from pointer into uint32_t
+        std::memcpy(&value, chunk_ptr, 4);
+        chunk_ptr += 4;
+
         // Perform little endian word swap
-        const uint32_t swapped = swap_words(*(chunk_ptr + i));
+        const uint32_t swapped = swap_words(value);
 
         // Write the word to the correct offset
         this->axi_driver.write(RSA_DATA_OFFSET + i, swapped, AXIDevice::RSA);
@@ -215,7 +216,7 @@ void RSADriver::write_chunk(const uint32_t* chunk_ptr) {
 void RSADriver::read_chunk(std::string& plaintext) {
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Read one dword of the decrypted chunk
-        const uint32_t& value = this->axi_driver.read(RSA_DATA_OFFSET, AXIDevice::RSA);
+        const uint32_t value = this->axi_driver.read(RSA_DATA_OFFSET, AXIDevice::RSA);
 
         // Split into bytes for adding to string
         IntSplitter.num = value;

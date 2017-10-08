@@ -43,7 +43,7 @@ private:
     std::string strip_pkcsv15_padding(const std::string& plaintext);
 
     // Write a single 512 bit chunk for decryption
-    void write_chunk(const uint32_t* chunk_ptr);
+    void write_chunk(const uint8_t* chunk_ptr);
 
     // Read a single 512 bit chunk
     void read_chunk(std::string& plaintext);

@@ -8,8 +8,11 @@ SRCS   := $(wildcard $(SRCDIR)/*.cpp)
 OBJS   := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 LIBS   := $(wildcard $(LIBDIR)/*.a)
 
+ASIO_DIR := $(DEPDIR)/asio/asio/include
+PROTOBUF_DIR := $(DEPDIR)/protobuf
+
 CC := g++
-CCFLAGS := -Wall -std=c++11 -I$(INCDIR) -I$(DEPDIR)/asio/asio/include -I$(DEPDIR)/protobuf
+CCFLAGS := -Wall -std=c++11 -I$(INCDIR) -I$(ASIO_DIR) -I$(PROTOBUF_DIR)
 
 TARGET := zynq-updater
 
