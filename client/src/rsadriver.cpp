@@ -1,5 +1,7 @@
 #include "rsadriver.hpp"
 
+#include <iostream>
+
 std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
     /**
      * Given a plaintext or ciphertext in std::vector format, either encrypts or decrypts
@@ -53,7 +55,7 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
         read_chunk(result);
 
         // Append result to the final output string
-        output.insert(idx * RSA_CHUNK_SIZE, result);
+        output.append(result);
 
         idx++;
     }
@@ -61,7 +63,7 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
     return output;
 }
 
-std::string RSADriver::decrypt(const std::string& ciphertext, bool pkcsv15) {
+std::string RSADriver::decrypt(const std::string& ciphertext) {
     /**
      * Given a ciphertext in string format, decrypts it using device key,
      * and returns the plaintext.
@@ -84,7 +86,7 @@ std::string RSADriver::decrypt(const std::string& ciphertext, bool pkcsv15) {
 
     std::string plaintext = compute_rsa(data, RSAKey::D_PRV);
 
-    if (pkcsv15) {
+    if (this->pkcsv15) {
         return strip_pkcsv15_padding(plaintext);
     } else {
         return plaintext;
@@ -123,9 +125,9 @@ std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
             // Padding valid -> strip it out of the chunk
             if (count == pad_size) {
                 const std::string& s = chunk.substr(pad_size, chunk.size()-pad_size);
-                stripped.insert(i * PKCSV15_CHUNK_SIZE, s);
+                stripped.append(s);
             } else {
-                stripped.insert(i * PKCSV15_CHUNK_SIZE, chunk);
+                stripped.append(chunk);
             }
 
         }
@@ -134,7 +136,7 @@ std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
     return stripped;
 }
 
-std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key, bool pkcsv15) {
+std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
     /**
      * Given a plaintext in string format, encrypts it using either GU or GC public key.
      * 
@@ -146,24 +148,25 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key, bool pk
     std::vector<std::string> data;
     
     // Pre-process input plaintext for PKCS#1 v1.5
-    if (pkcsv15) {
+    if (this->pkcsv15) {
         const int num_chunks = plaintext.size() / PKCSV15_CHUNK_SIZE;
         const int last_chunk_size = plaintext.size() % PKCSV15_CHUNK_SIZE;
 
         data.reserve(num_chunks);
 
+        // Reserve 64 bytes for output chunk
         std::string chunk;
-        chunk.reserve(RSA_CHUNK_SIZE); // Reserve 64 bytes for output chunk
+        chunk.reserve(RSA_CHUNK_SIZE);
         
         for (int i = 0; i < num_chunks; i++) {
             // Insert 11 byte padding
-            chunk.insert(0, PKCSV15_PADDING);
+            chunk.append(PKCSV15_PADDING, PKCSV15_PAD_SIZE);
 
             // Get pointer to correct position in plaintext string
             const char* pos = plaintext.data() + i * PKCSV15_CHUNK_SIZE;
             
             // Insert 53 byte plaintext chunk after the padding
-            chunk.insert(PKCSV15_PAD_SIZE, pos, PKCSV15_CHUNK_SIZE);
+            chunk.append(pos, PKCSV15_CHUNK_SIZE);
 
             // Append chunk to output vector
             data.push_back(chunk);
@@ -171,23 +174,23 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key, bool pk
             chunk.clear();
         }
 
-        // Handle the last chunk
-        const int padding_size = PKCSV15_CHUNK_SIZE - last_chunk_size;
-
-        if (padding_size > 0) {
-            // Insert 11 byte padding
-            chunk.insert(0, PKCSV15_PADDING);
-
+        // Handle the last chunk if it is not exactly the required size
+        if (last_chunk_size != 0) {
+            const int padding_size = PKCSV15_CHUNK_SIZE - last_chunk_size;
+            
+            // Insert 11 byte PKCSv15 padding
+            chunk.append(PKCSV15_PADDING, PKCSV15_PAD_SIZE);
+            
             // Left pad the plaintext with padding_size until it is 53 bytes long
             for (int i = 0; i < padding_size; i++)
-                chunk.insert(PKCSV15_PAD_SIZE + i, 1, (char)padding_size);
+                chunk.append(1, (char)padding_size);
         
             // Insert actual data to complete the chunk
             const char* pos = plaintext.data() + num_chunks * PKCSV15_CHUNK_SIZE;
-            chunk.insert(PKCSV15_PAD_SIZE+padding_size, pos, last_chunk_size);
-
-            data.push_back(chunk);
+            chunk.append(pos, last_chunk_size);
         }
+
+        data.push_back(chunk);
     }
     
     return compute_rsa(data, key);

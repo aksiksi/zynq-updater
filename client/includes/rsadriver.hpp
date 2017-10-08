@@ -30,10 +30,11 @@ enum RSAKey {
 
 class RSADriver {
 public:
-    std::string decrypt(const std::string& ciphertext, bool pkcsv15);
-    std::string encrypt(const std::string& plaintext, RSAKey key, bool pkcsv15);
+    std::string decrypt(const std::string& ciphertext);
+    std::string encrypt(const std::string& plaintext, RSAKey key);
 private:
     AXIDriver axi_driver;
+    bool pkcsv15 = true;
 
     // Encrypts or decrypts given data, based on provided key
     std::string compute_rsa(std::vector<std::string>& data, RSAKey key);
