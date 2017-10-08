@@ -1,9 +1,7 @@
 #include "axidriver.hpp"
 
-#include <cstring>
-
-#ifdef __linux__   
-    #include <stdio.h>
+#ifdef __linux__
+    #include <cstdio>
     #include <fcntl.h>
 
     uint8_t* AXIDriver::get_mmap(uint32_t base_addr, size_t length) {
@@ -13,7 +11,7 @@
         */
         int fd = open("/dev/mem", O_RDWR);
         if (fd < 1) {
-            perror("/dev/mem "); // Prints formatted error
+            std::perror("/dev/mem "); // Prints formatted error
             return NULL;
         }
         

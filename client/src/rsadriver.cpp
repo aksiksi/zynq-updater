@@ -1,7 +1,5 @@
 #include "rsadriver.hpp"
 
-#include <cstring>
-
 std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
     /**
      * Given a plaintext or ciphertext in std::vector format, either encrypts or decrypts

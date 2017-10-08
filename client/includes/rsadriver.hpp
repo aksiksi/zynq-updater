@@ -2,8 +2,8 @@
 
 #include <string>
 #include <vector>
-
-#include <stdint.h>
+#include <cstdint>
+#include <cstring>
 
 #include "axidriver.hpp" // for AXIDriver class
 #include "utils.hpp" // for IntSplitter and swap_bytes()

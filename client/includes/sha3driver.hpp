@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
+#include <cstring>
 
 #include "axidriver.hpp" // for AXIDriver class
 #include "utils.hpp" // for IntSplitter and swap_bytes()

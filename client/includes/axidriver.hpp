@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
 
 #ifdef __linux__
     #include <sys/mman.h>
