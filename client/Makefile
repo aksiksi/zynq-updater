@@ -9,14 +9,14 @@ OBJS   := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 LIBS   := $(wildcard $(LIBDIR)/*.a)
 
 CC := g++
-CCFLAGS := -Wall -std=c++11 -flto -I$(INCDIR) -I$(DEPDIR)/asio/asio/include -I$(DEPDIR)/protobuf
+CCFLAGS := -Wall -std=c++11 -I$(INCDIR) -I$(DEPDIR)/asio/asio/include -I$(DEPDIR)/protobuf
 
 TARGET := zynq-updater
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -flto $(LIBS) $^ -o $@
+	$(CC) $(LIBS) $^ -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
 	$(CC) $(CCFLAGS) -c $< -o $@
