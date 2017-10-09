@@ -3,7 +3,7 @@ import socketserver
 
 import protocol_pb2
 
-import update_image
+from update_image import read_image_header
 import rsa512
 import rsakeys
 
@@ -191,8 +191,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         cr.IG = I_GC
 
         # Append hash of update image to OrgResponse
-        image = update_image.UpdateImage()
-        headers = image.read_header(IMAGE_PATH)
+        headers = read_image_header(IMAGE_PATH)
         cr.HC = headers[-1]
 
         m3 = protocol_pb2.M3()
