@@ -6,7 +6,7 @@ void SHA3Driver::reset() {
     this->axi_driver.write(SHA3_RESET_OFFSET, 0x0, AXIDevice::SHA3);
 }
 
-std::string SHA3Driver::compute_hash(std::string& input., bool readable) {
+std::string SHA3Driver::compute_hash(std::string& input, bool readable) {
     // Reset the core
     this->reset();
 
