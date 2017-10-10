@@ -41,6 +41,9 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
         // Start the RSA encryption or decryption process
         this->axi_driver.write(RSA_START_OFFSET, 1, AXIDevice::RSA);
 
+        // Send a stop signal to the RSA core to prevent looping behavior (?)
+        this->axi_driver.write(RSA_STOP_OFFSET, 0, AXIDevice::RSA);
+
         // Wait for completion
         rsa_done = 0;
         while (rsa_done != 3)
@@ -214,7 +217,7 @@ void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
 void RSADriver::read_chunk(std::string& plaintext) {
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Read one dword of the decrypted chunk
-        const uint32_t value = this->axi_driver.read(RSA_DATA_OFFSET, AXIDevice::RSA);
+        const uint32_t value = this->axi_driver.read(RSA_DATA_OFFSET + i, AXIDevice::RSA);
 
         // Split into bytes for adding to string
         IntSplitter.num = value;
@@ -222,7 +225,7 @@ void RSADriver::read_chunk(std::string& plaintext) {
         // Iterate over bytes in reverse order to get correct ordering (little endian :/)
         for (int j = 3; j >= 0; j--) {
             const uint8_t& c = IntSplitter.bytes[j];
-            plaintext.append(c, 1);
+            plaintext.push_back(c);
         }
     }
 }

@@ -13,6 +13,7 @@
 #define RSA_COMPLETE      0x40
 #define RSA_KEY_SELECT    0x40
 #define RSA_START_OFFSET  0x44
+#define RSA_STOP_OFFSET   0x48
 
 #define RSA_CHUNK_SIZE     64 // bytes
 #define PKCSV15_CHUNK_SIZE 53 // bytes
@@ -32,9 +33,10 @@ class RSADriver {
 public:
     std::string decrypt(const std::string& ciphertext);
     std::string encrypt(const std::string& plaintext, RSAKey key);
+    inline void toggle_pkcsv15() { !this->pkcsv15; }
 private:
     AXIDriver axi_driver;
-    bool pkcsv15 = true;
+    bool pkcsv15 = false;
 
     // Encrypts or decrypts given data, based on provided key
     std::string compute_rsa(std::vector<std::string>& data, RSAKey key);

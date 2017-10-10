@@ -86,8 +86,8 @@ std::string SHA3Driver::convert_hash(std::string& hash) {
         const char& c = *(hash.data() + i);
 
         // Convert each character to two hex digits
-        readable.append(&hex[(c & 0xF0) >> 4], 1);
-        readable.append(&hex[c & 0xF], 1);
+        readable.push_back(hex[(c & 0xF0) >> 4]);
+        readable.push_back(hex[c & 0xF]);
     }
 
     return readable;
