@@ -195,9 +195,8 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
 void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
     /**
      * Given a 512-bit chunk, write it to the correct location to be used
-     * in decryption by the RSA core.
+     * by the RSA core for decryption or encryption.
      */
-
     uint32_t value;
 
     // Iterate over each dword in the chunk
@@ -206,18 +205,20 @@ void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
         std::memcpy(&value, chunk_ptr, 4);
         chunk_ptr += 4;
 
-        // Perform little endian word swap
-        const uint32_t swapped = swap_words(value);
+        // Perform little endian byte swap
+        const uint32_t swapped = swap_bytes(value);
 
         // Write the word to the correct offset
-        this->axi_driver.write(RSA_DATA_OFFSET + i, swapped, AXIDevice::RSA);
+        // Write words to highest RSA AXI address and move downwards
+        this->axi_driver.write(RSA_DATA_START + i, swapped, AXIDevice::RSA);
     }
 }
 
 void RSADriver::read_chunk(std::string& plaintext) {
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Read one dword of the decrypted chunk
-        const uint32_t value = this->axi_driver.read(RSA_DATA_OFFSET + i, AXIDevice::RSA);
+        // Start from the last word in the RSA core address space
+        const uint32_t& value = this->axi_driver.read(RSA_DATA_START + i, AXIDevice::RSA);
 
         // Split into bytes for adding to string
         IntSplitter.num = value;

@@ -25,8 +25,8 @@ std::string SHA3Driver::compute_hash(std::string& input, bool readable) {
         std::memcpy(&value, ptr, 4);
         ptr += 4;
 
-    	// IMPORTANT: Perform a word swap to account for reading int in little endian form
-    	const uint32_t swapped = swap_words(value);
+    	// Perform a byte swap to account for reading int in little endian form
+    	const uint32_t swapped = swap_bytes(value);
         this->axi_driver.write(MSG_DATA_OFFSET, swapped, AXIDevice::SHA3);
     }
 
