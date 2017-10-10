@@ -25,7 +25,7 @@ const char hex[16] = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e
 class SHA3Driver {
 public:
     void reset();
-    std::string compute_hash(std::string& data);
+    std::string compute_hash(std::string& data, bool readable);
 private:
     AXIDriver axi_driver;
     std::string read_hash();

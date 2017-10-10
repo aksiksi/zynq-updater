@@ -6,7 +6,7 @@ void SHA3Driver::reset() {
     this->axi_driver.write(SHA3_RESET_OFFSET, 0x0, AXIDevice::SHA3);
 }
 
-std::string SHA3Driver::compute_hash(std::string& input) {
+std::string SHA3Driver::compute_hash(std::string& input., bool readable) {
     // Reset the core
     this->reset();
 
@@ -39,7 +39,13 @@ std::string SHA3Driver::compute_hash(std::string& input) {
         hash_ready = this->axi_driver.read(HASH_READY_OFFSET, AXIDevice::SHA3);
 
     // Read out the resulting hash
-    return this->read_hash();
+    std::string hash = this->read_hash();
+    
+    // If readable: return a hex string of the hash
+    if (readable)
+        return this->convert_hash(hash);
+    else
+        return hash;
 }
 
 std::string SHA3Driver::read_hash() {
@@ -72,17 +78,16 @@ std::string SHA3Driver::convert_hash(std::string& hash) {
     /**
      * Given a binary hash, returns the hash in readable ASCII hex format.
      */
-    // TODO: test on Zynq
     std::string readable;
-    readable.reserve(HASH_SIZE);
+    readable.reserve(HASH_SIZE * 2);
 
     for (int i = 0; i < HASH_SIZE; i++) {
         // Get char from underlying string ptr
         const char& c = *(hash.data() + i);
 
         // Convert each character to two hex digits
-        hash.append(&hex[(c & 0xF0) >> 4], 1);
-        hash.append(&hex[c & 0xF], 1);
+        readable.append(&hex[(c & 0xF0) >> 4], 1);
+        readable.append(&hex[c & 0xF], 1);
     }
 
     return readable;
