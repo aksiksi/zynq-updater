@@ -9,7 +9,8 @@
 #include "utils.hpp" // for IntSplitter and swap_bytes()
 
 // Relevant memory offsets for RSA-512 core (in bytes)
-#define RSA_DATA_OFFSET   0x00 // Points to least significant word in the 16 words of input
+#define RSA_DATA_START    0x00 // Points to least significant word in the 16 words of input
+#define RSA_DATA_END      0x3c // Points to most sig. word in the input
 #define RSA_COMPLETE      0x40
 #define RSA_KEY_SELECT    0x40
 #define RSA_START_OFFSET  0x44
