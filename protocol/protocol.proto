@@ -1,0 +1,53 @@
+syntax = 'proto3';
+
+message UpdateCheck {
+    uint32 V = 1;
+    uint32 ID = 2;
+}
+
+message UpdateStatus {
+    bool successful = 1;
+}
+
+message OrgChallenge {
+    // N_{G,U/i}, I_{G,U/i}
+    uint64 NG = 1;
+    uint32 IG = 2;
+}
+
+message DeviceChallenge {
+    // N_{G,U/i}, N_{D,U/i}, I_D
+    uint64 NG = 1;
+    uint64 ND = 2;
+    uint32 ID = 3;
+}
+
+message UpdatingOrgResponse {
+    uint64 ND = 1;
+    uint32 IG = 2;
+}
+
+message ConfirmingOrgResponse {
+    uint64 ND = 1;
+    uint32 IG = 2;
+    bytes HC = 3; // Confirming hash
+}
+
+message M1 {
+    // Org to device
+    // V, {OrgChallenge}D_pub
+    uint32 V = 1;
+    bytes OC = 2; // Encrypted OrgChallenge
+}
+
+message M2 {
+    // Device to org
+    // {DeviceChallenge}G_{U/i,pub}
+    bytes DC = 1;
+}
+
+message M3 {
+    // Org to device
+    // {OrgResponse}D_pub
+    bytes OR = 1; // Encrypted OrgResponse
+}
