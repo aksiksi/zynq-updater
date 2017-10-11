@@ -114,12 +114,14 @@ def write_image_body(output_image, inputs, lengths):
             - output_image: output image file -> (file object)
             - inputs: list of input files -> (list of string)
             - lengths: list of lengths of each input file -> (list of int)
+
+        Returns: SHA-3 hash digest (string)
     """
     # Compute Keccak 512 (slight variation on SHA-3)
     k = sha3.keccak_512()
 
     # Write each input file to output image while computing hash in parallel
-    for each in inputs:
+    for each, length in zip(inputs, lengths):
         with open(each, 'rb') as f:
             # Read 1024 bytes from input file and write to output file
             # Keep reading until EOF
@@ -134,6 +136,13 @@ def write_image_body(output_image, inputs, lengths):
 
                 # Read next block
                 block = f.read(1024)
+
+            # Append some bytes for hash calculation if not multiple of 64 bytes
+            # Pad with 0xFF the end
+            last_block_size = length % 64
+            
+            if last_block_size != 0:
+                k.update(b'\xFF' * (64 - last_block_size))
 
     # Seek back to hash position and write hash to output file
     num_lengths = len(lengths) * 4

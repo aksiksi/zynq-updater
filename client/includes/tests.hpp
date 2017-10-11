@@ -71,4 +71,18 @@ void sha3driver_test() {
         std::cout << "** Message: " << message << std::endl;
         std::cout << "** Message length: " << message.size() << std::endl;
     }
+
+    // Short message of 12 bytes which will be padded with 0xFF
+    message = "Hello, world!";
+    hash = sha3driver.compute_hash(message, true);
+
+    expected = "6dc1540d55e973fc207aa8cb31ae9f6d19be3bd38100b437a37768df41a958aeb6ae0beb6485e22b2b308506899be1b1c5aefa14da1321f7dc5287ba77e2dbf0";
+    if (hash.compare(expected) == 0)
+        std::cout << "Test #4 succeeeded." << std::endl;
+    else {
+        std::cout << "Test #4 failed." << std::endl;
+        std::cout << "** Hash: " << hash << std::endl;
+        std::cout << "** Message: " << message << std::endl;
+        std::cout << "** Message length: " << message.size() << std::endl;
+    }
 }
