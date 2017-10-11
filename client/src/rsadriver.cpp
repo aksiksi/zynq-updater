@@ -54,6 +54,9 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
 
         // Append result to the final output string
         output.append(result);
+
+        // Free up result
+        result.clear();
     }
 
     return output;
@@ -92,6 +95,7 @@ std::string RSADriver::decrypt(const std::string& ciphertext) {
 std::string RSADriver::strip_pkcs1_padding(const std::string& plaintext) {
     /**
      * Given a plaintext string, strips all padding from the string and returns original message.
+     * Operates on a block-by-block basis, assuming 512 bit blocks.
      * 
      * Removes the standard PKCS#1 v1.5 padding as well as the last chunk length padding.
      */
@@ -118,15 +122,16 @@ std::string RSADriver::strip_pkcs1_padding(const std::string& plaintext) {
                     count++;
             }
             
-            // Padding valid -> strip it out of the chunk
+            // Padding valid -> strip it out of the chunk and append as last chunk
             if (count == pad_size) {
                 const std::string& s = chunk.substr(pad_size, chunk.size()-pad_size);
                 stripped.append(s);
-            } else {
-                stripped.append(chunk);
+                return stripped;
             }
-
         }
+        
+        // Append stripped chunk to the final output string
+        stripped.append(chunk);
     }
 
     return stripped;
