@@ -1,3 +1,7 @@
 [submodule "client/dependencies/asio"]
 	path = client/dependencies/asio
 	url = https://github.com/chriskohlhoff/asio
+[submodule "client/dependencies/protobuf"]
+	path = client/dependencies/protobuf
+	url = https://github.com/google/protobuf.git
+	branch = 3.4.x

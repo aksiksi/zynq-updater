@@ -9,7 +9,7 @@ OBJS   := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 LIBS   := $(wildcard $(LIBDIR)/*.a)
 
 ASIO_DIR := $(DEPDIR)/asio/asio/include
-PROTOBUF_DIR := $(DEPDIR)/protobuf
+PROTOBUF_DIR := $(DEPDIR)/protobuf/src
 
 CC := g++
 CCFLAGS := -Wall -std=c++11 -I$(INCDIR) -I$(ASIO_DIR) -I$(PROTOBUF_DIR)
