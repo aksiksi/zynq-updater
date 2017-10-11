@@ -3,7 +3,7 @@
 #include <cstring>
 
 void SHA3Driver::reset() {
-    this->axi_driver.write(SHA3_RESET_OFFSET, 0x0, AXIDevice::SHA3);
+    this->write(SHA3_RESET_OFFSET, 0x0);
 }
 
 std::string SHA3Driver::compute_hash(std::string& input, bool readable) {
@@ -25,23 +25,23 @@ std::string SHA3Driver::compute_hash(std::string& input, bool readable) {
     uint32_t value;
 
     // Write each dword to the SHA-3 FIFO address
-    for (int i = 0; i < num_words; i++) {
+    for (uint32_t i = 0; i < num_words; i++) {
         // Read int from uint8_t *
         std::memcpy(&value, ptr, 4);
         ptr += 4;
 
     	// Perform a byte swap to account for reading int in little endian form
     	const uint32_t swapped = swap_bytes(value);
-        this->axi_driver.write(MSG_DATA_OFFSET, swapped, AXIDevice::SHA3);
+        this->write(MSG_DATA_OFFSET, swapped);
     }
 
     // Start hash computation
-    this->axi_driver.write(START_HASH_OFFSET, 0x0, AXIDevice::SHA3);
+    this->write(START_HASH_OFFSET, 0x0);
 
     // Wait for ready bit
     uint8_t hash_ready = 0;
     while (hash_ready != 1)
-        hash_ready = this->axi_driver.read(HASH_READY_OFFSET, AXIDevice::SHA3);
+        hash_ready = this->read(HASH_READY_OFFSET);
 
     // Read out the resulting hash
     std::string hash = this->read_hash();
@@ -65,7 +65,7 @@ std::string SHA3Driver::read_hash() {
     hash.reserve(HASH_SIZE);
 
     for (int i = 0; i < HASH_SIZE / 4; i++) {
-        const uint32_t value = this->axi_driver.read(HASH_DATA_OFFSET, AXIDevice::SHA3);
+        const uint32_t value = this->read(HASH_DATA_OFFSET);
 
         // Split into bytes for string
         IntSplitter.num = value;

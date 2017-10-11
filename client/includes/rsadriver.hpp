@@ -8,6 +8,8 @@
 #include "axidriver.hpp" // for AXIDriver class
 #include "utils.hpp" // for IntSplitter and swap_bytes()
 
+#define RSA_BASE_ADDR     FPGA_BASE_ADDR + 0x3C00000
+
 // Relevant memory offsets for RSA-512 core (in bytes)
 #define RSA_DATA_START    0x00 // Points to least significant word in the 16 words of input
 #define RSA_DATA_END      0x3c // Points to most sig. word in the input
@@ -30,14 +32,13 @@ enum RSAKey {
     GC_PUB = 6  // Confirming org public key (encryption)
 };
 
-class RSADriver {
+class RSADriver : public AXIDriver {
 public:
+    RSADriver() : AXIDriver(RSA_BASE_ADDR) {}
     std::string decrypt(const std::string& ciphertext);
     std::string encrypt(const std::string& plaintext, RSAKey key);
     bool pkcs1 = true;
 private:
-    AXIDriver axi_driver;
-
     // Encrypts or decrypts given data, based on provided key
     std::string compute_rsa(std::vector<std::string>& data, RSAKey key);
 

@@ -20,9 +20,9 @@
     }
 #endif
 
-uint32_t AXIDriver::read(uint32_t offset, AXIDevice d) {
+uint32_t AXIDriver::read(uint32_t offset) {
     // Get pointer to correct offset
-    uint8_t* ptr = this->compute_offset(offset, d);
+    uint8_t* ptr = this->compute_offset(offset);
 
     // Read 4 bytes into an int
     uint32_t value;
@@ -31,7 +31,7 @@ uint32_t AXIDriver::read(uint32_t offset, AXIDevice d) {
     return value;
 }
 
-void AXIDriver::write(uint32_t offset, uint32_t value, AXIDevice d) {
-    uint8_t* ptr = this->compute_offset(offset, d);
+void AXIDriver::write(uint32_t offset, uint32_t value) {
+    uint8_t* ptr = this->compute_offset(offset);
     std::memcpy(ptr, &value, 4);
 }

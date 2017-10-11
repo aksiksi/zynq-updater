@@ -36,18 +36,18 @@ std::string RSADriver::compute_rsa(std::vector<std::string>& data, RSAKey key) {
         this->write_chunk(ptr);
 
         // Select key to be used
-        this->axi_driver.write(RSA_KEY_SELECT, key, AXIDevice::RSA);
+        this->write(RSA_KEY_SELECT, key);
 
         // Start the RSA encryption or decryption process
-        this->axi_driver.write(RSA_START_OFFSET, 1, AXIDevice::RSA);
+        this->write(RSA_START_OFFSET, 1);
 
         // Send a stop signal to the RSA core to prevent looping behavior (?)
-        this->axi_driver.write(RSA_STOP_OFFSET, 0, AXIDevice::RSA);
+        this->write(RSA_STOP_OFFSET, 0);
 
         // Wait for completion
         rsa_done = 0;
         while (rsa_done != 3)
-            rsa_done = this->axi_driver.read(RSA_COMPLETE, AXIDevice::RSA);
+            rsa_done = this->read(RSA_COMPLETE);
 
         // Read out plaintext chunk in raw binary format (64 bytes)
         read_chunk(result);
@@ -210,7 +210,7 @@ void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
 
         // Write the word to the correct offset
         // Write words to highest RSA AXI address and move downwards
-        this->axi_driver.write(RSA_DATA_END - i, swapped, AXIDevice::RSA);
+        this->write(RSA_DATA_END - i, swapped);
     }
 }
 
@@ -218,7 +218,7 @@ void RSADriver::read_chunk(std::string& plaintext) {
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Read one dword of the decrypted chunk
         // Start from the last word in the RSA core address space and move down
-        const uint32_t& value = this->axi_driver.read(RSA_DATA_END - i, AXIDevice::RSA);
+        const uint32_t& value = this->read(RSA_DATA_END - i);
 
         // Split into bytes for adding to string
         IntSplitter.num = value;
