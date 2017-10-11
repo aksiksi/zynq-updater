@@ -82,14 +82,14 @@ std::string RSADriver::decrypt(const std::string& ciphertext) {
 
     std::string plaintext = compute_rsa(data, RSAKey::D_PRV);
 
-    if (this->pkcsv15) {
-        return strip_pkcsv15_padding(plaintext);
+    if (this->pkcs1) {
+        return strip_pkcs1_padding(plaintext);
     } else {
         return plaintext;
     }
 }
 
-std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
+std::string RSADriver::strip_pkcs1_padding(const std::string& plaintext) {
     /**
      * Given a plaintext string, strips all padding from the string and returns original message.
      * 
@@ -98,12 +98,12 @@ std::string RSADriver::strip_pkcsv15_padding(const std::string& plaintext) {
     const int num_chunks = plaintext.size() / RSA_CHUNK_SIZE;
     
     std::string stripped;
-    stripped.reserve(num_chunks * PKCSV15_CHUNK_SIZE);
+    stripped.reserve(num_chunks * PKCS1_CHUNK_SIZE);
 
     for (int i = 0; i < num_chunks; i++) {
         // Get a substring with stripped padding (i.e., only chunk data)
-        const int chunk_offset = (i * RSA_CHUNK_SIZE) + PKCSV15_PAD_SIZE;
-        const std::string& chunk = plaintext.substr(chunk_offset, PKCSV15_CHUNK_SIZE);
+        const int chunk_offset = (i * RSA_CHUNK_SIZE) + PKCS1_PAD_SIZE;
+        const std::string& chunk = plaintext.substr(chunk_offset, PKCS1_CHUNK_SIZE);
 
         // Strip pad_size from start of chunk as well (if applicable)
         if (i == num_chunks-1) {
@@ -144,11 +144,11 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
     std::vector<std::string> data;
     
     // Pre-process input plaintext for PKCS#1 v1.5
-    if (this->pkcsv15) {
-        const int num_chunks = plaintext.size() / PKCSV15_CHUNK_SIZE;
-        const int last_chunk_size = plaintext.size() % PKCSV15_CHUNK_SIZE;
+    if (this->pkcs1) {
+        const int num_chunks = plaintext.size() / PKCS1_CHUNK_SIZE;
+        const int last_chunk_size = plaintext.size() % PKCS1_CHUNK_SIZE;
 
-        data.reserve(num_chunks);
+        data.reserve(num_chunks + last_chunk_size);
 
         // Reserve 64 bytes for output chunk
         std::string chunk;
@@ -156,13 +156,13 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
         
         for (int i = 0; i < num_chunks; i++) {
             // Insert 11 byte padding
-            chunk.append(PKCSV15_PADDING, PKCSV15_PAD_SIZE);
+            chunk.append(PKCS1_PADDING, PKCS1_PAD_SIZE);
 
             // Get pointer to correct position in plaintext string
-            const char* pos = plaintext.data() + i * PKCSV15_CHUNK_SIZE;
+            const char* pos = plaintext.data() + i * PKCS1_CHUNK_SIZE;
             
             // Insert 53 byte plaintext chunk after the padding
-            chunk.append(pos, PKCSV15_CHUNK_SIZE);
+            chunk.append(pos, PKCS1_CHUNK_SIZE);
 
             // Append chunk to output vector
             data.push_back(chunk);
@@ -172,17 +172,17 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
 
         // Handle the last chunk if it is not exactly the required size
         if (last_chunk_size != 0) {
-            const int padding_size = PKCSV15_CHUNK_SIZE - last_chunk_size;
+            const int padding_size = PKCS1_CHUNK_SIZE - last_chunk_size;
             
-            // Insert 11 byte PKCSv15 padding
-            chunk.append(PKCSV15_PADDING, PKCSV15_PAD_SIZE);
+            // Insert 11 byte PKCS1 v1.5 padding
+            chunk.append(PKCS1_PADDING, PKCS1_PAD_SIZE);
             
             // Left pad the plaintext with padding_size until it is 53 bytes long
             for (int i = 0; i < padding_size; i++)
                 chunk.append(1, (char)padding_size);
         
             // Insert actual data to complete the chunk
-            const char* pos = plaintext.data() + num_chunks * PKCSV15_CHUNK_SIZE;
+            const char* pos = plaintext.data() + num_chunks * PKCS1_CHUNK_SIZE;
             chunk.append(pos, last_chunk_size);
         }
 
@@ -210,15 +210,15 @@ void RSADriver::write_chunk(const uint8_t* chunk_ptr) {
 
         // Write the word to the correct offset
         // Write words to highest RSA AXI address and move downwards
-        this->axi_driver.write(RSA_DATA_START + i, swapped, AXIDevice::RSA);
+        this->axi_driver.write(RSA_DATA_END - i, swapped, AXIDevice::RSA);
     }
 }
 
 void RSADriver::read_chunk(std::string& plaintext) {
     for (int i = 0; i < RSA_CHUNK_SIZE; i += 4) {
         // Read one dword of the decrypted chunk
-        // Start from the last word in the RSA core address space
-        const uint32_t& value = this->axi_driver.read(RSA_DATA_START + i, AXIDevice::RSA);
+        // Start from the last word in the RSA core address space and move down
+        const uint32_t& value = this->axi_driver.read(RSA_DATA_END - i, AXIDevice::RSA);
 
         // Split into bytes for adding to string
         IntSplitter.num = value;
