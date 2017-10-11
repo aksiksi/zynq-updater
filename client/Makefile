@@ -12,17 +12,19 @@ ASIO_DIR := $(DEPDIR)/asio/asio/include
 PROTOBUF_DIR := $(DEPDIR)/protobuf/src
 
 CC := g++
-CCFLAGS := -Wall -std=c++11 -I$(INCDIR) -I$(ASIO_DIR) -I$(PROTOBUF_DIR)
+CCFLAGS  := -Wall -std=c++11
+INCLUDES := -I$(INCDIR) -I$(ASIO_DIR) -I$(PROTOBUF_DIR)
+LIBS := -L $(LIBDIR) -l protobuf -l pthread
 
 TARGET := zynq-updater
 
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(LIBS) $^ -o $@
+	$(CC) $^ $(LIBS) -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp | $(OBJDIR)
-	$(CC) $(CCFLAGS) -c $< -o $@
+	$(CC) $(CCFLAGS) $(INCLUDES) -c $< -o $@
 
 # If OBJDIR doesn't exist, create it
 $(OBJDIR):
