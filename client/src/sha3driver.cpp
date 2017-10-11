@@ -12,7 +12,9 @@ std::string SHA3Driver::compute_hash(std::string& input, bool readable) {
 
     // If input not multiple of 64 bytes, append 0xFFs to the end
     const uint8_t last_block_size = input.size() % 64;
-    input.append(HASH_SIZE - last_block_size, 0xFF);
+
+    if (last_block_size != 0)
+        input.append(HASH_SIZE - last_block_size, 0xFF);
 
     // Get a pointer to underlying string data
     const uint8_t* ptr = reinterpret_cast<const uint8_t *>(input.data());

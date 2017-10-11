@@ -38,7 +38,7 @@ void sha3driver_test() {
     // df8b3ee8e455c8f7f8e693241eb696043e8bc2002ffe13391cf807e7996827694108fba2a2541aa849e5a33e8adc2ec24de2fe325ee027dbec902b1ac1682063
     expected = "df8b3ee8e455c8f7f8e693241eb696043e8bc2002ffe13391cf807e7996827694108fba2a2541aa849e5a33e8adc2ec24de2fe325ee027dbec902b1ac1682063";
     if (hash.compare(expected) == 0)
-        std::cout << "Test #1 succeeeded." << std::endl;
+        std::cout << "Test #1 succeeded." << std::endl;
     else {
         std::cout << "Test #1 failed." << std::endl;
         std::cout << "Hash: " << hash << std::endl;
@@ -51,7 +51,7 @@ void sha3driver_test() {
 
     expected = "961ddde44b61c14b9ebd0aee7c738c8b4e199e02055134bf48745ef9f08840b8f63848db59f0a3af3decd440d088cbfbf5fa8486e7dca30ca168f0e35a7f7eb0";
     if (hash.compare(expected) == 0)
-        std::cout << "Test #2 succeeeded." << std::endl;
+        std::cout << "Test #2 succeeded." << std::endl;
     else {
         std::cout << "Test #2 failed." << std::endl;
         std::cout << "Hash: " << hash << std::endl;
@@ -64,7 +64,7 @@ void sha3driver_test() {
 
     expected = "add7ae1a89c2d578cb8e2f70ad088d8ef5aabdf1fdbd8c248a5e47bb73ec08b0178e82b17491d283815100d8871a567e637cbbb9f076e916c4fb543efe966a01";
     if (hash.compare(expected) == 0)
-        std::cout << "Test #3 succeeeded." << std::endl;
+        std::cout << "Test #3 succeeded." << std::endl;
     else {
         std::cout << "Test #3 failed." << std::endl;
         std::cout << "** Hash: " << hash << std::endl;
@@ -72,13 +72,13 @@ void sha3driver_test() {
         std::cout << "** Message length: " << message.size() << std::endl;
     }
 
-    // Short message of 12 bytes which will be padded with 0xFF
+    // Short message of 12 bytes which will be internally padded with 0xFF
     message = "Hello, world!";
     hash = sha3driver.compute_hash(message, true);
 
-    expected = "6dc1540d55e973fc207aa8cb31ae9f6d19be3bd38100b437a37768df41a958aeb6ae0beb6485e22b2b308506899be1b1c5aefa14da1321f7dc5287ba77e2dbf0";
+    expected = "9871c9900ce0b82977447481c9ca3f99ad40b6054ae9555771dcb865fc6e2c43b10097d5078c2f9868bb0e1f90a153810718d522cc24db34e437ad732dcefa37";
     if (hash.compare(expected) == 0)
-        std::cout << "Test #4 succeeeded." << std::endl;
+        std::cout << "Test #4 succeeded." << std::endl;
     else {
         std::cout << "Test #4 failed." << std::endl;
         std::cout << "** Hash: " << hash << std::endl;
