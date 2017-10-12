@@ -52,8 +52,15 @@ ur.ParseFromString(m3.OR)
 
 print('Received from GU: M3(UpdatingOrgResponse(ND={0}, IG={1}))'.format(ur.ND, ur.IG))
 
+# Receive UpdateImage containing size of update
+data = s.recv(512)
+ui = protocol_pb2.UpdateImage()
+ui.ParseFromString(data)
+
+print('Received from GU: UpdateImage(size={0})'.format(ui.size))
+
 # Receive the update image
-data = s.recv(1024*1024*10) # 10 MB buffer
+data = s.recv(ui.size) # 10 MB buffer
 print('Received image: {0}'.format(data))
 
 ### Now for GC

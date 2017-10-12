@@ -140,13 +140,18 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         # Next, send the update image
         with open(IMAGE_PATH, 'rb') as f:
             content = f.read()
+
+            # Send the length of the update image first to simplify buffer allocation
+            ui = protocol_pb2.UpdateImage()
+            ui.size = len(content)
+            self.request.sendall(ui.SerializeToString())
             
             if not DEBUG:
                 self.request.sendall(self.d_rsa.encrypt(content))
             else:
                 self.request.sendall(content)
 
-        print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={0}'.format(ur.ND, ur.IG, self.ID))
+        print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={2}'.format(ur.ND, ur.IG, self.ID))
         print('- GU sent update image to ID={0}'.format(self.ID))
 
         # Authenticate GC next
