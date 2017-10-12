@@ -80,6 +80,9 @@ bool receive_image(tcp::socket& socket, uint32_t image_size) {
         total_read += len;
     }
 
+    // Done!
+    socket.send(asio::buffer("OK"));
+
     out_file.close();
 }
 

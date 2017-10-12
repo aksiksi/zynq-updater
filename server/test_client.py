@@ -62,6 +62,7 @@ s.send(b'OK')
 
 # Receive the update image
 data = s.recv(ui.size) # 10 MB buffer
+s.send(b'OK')
 print('Received image: {0}'.format(data))
 
 ### Now for GC

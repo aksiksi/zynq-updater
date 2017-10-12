@@ -25,7 +25,7 @@ I_GC = 222
 V = 1234
 
 # Path to update image
-IMAGE_PATH = 'testimage.bin'
+IMAGE_PATH = 'output_image.bin'
 
 class ProtocolStateHandler(socketserver.BaseRequestHandler):
     def idle_state(self):
@@ -137,6 +137,8 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
 
         self.request.sendall(m3.SerializeToString())
 
+        print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={2}'.format(ur.ND, ur.IG, self.ID))
+
         # Next, send the update image
         with open(IMAGE_PATH, 'rb') as f:
             content = f.read()
@@ -154,7 +156,9 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
             else:
                 self.request.sendall(content)
 
-        print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={2}'.format(ur.ND, ur.IG, self.ID))
+        # Wait for client to confirm
+        _ = self.request.recv(512)
+
         print('- GU sent update image to ID={0}'.format(self.ID))
 
         # Authenticate GC next
