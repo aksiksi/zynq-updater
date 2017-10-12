@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 
 #define ASIO_STANDALONE // Do not use Boost
 #include "asio.hpp"
@@ -10,8 +11,6 @@
 #include "sha3driver.hpp"
 #include "rsadriver.hpp"
 #include "tests.hpp"
-
-#define DEBUG
 
 using asio::ip::tcp;
 
@@ -23,6 +22,10 @@ const uint32_t PORT = 8080;
 const uint32_t NUM_ORGS = 2;
 const uint32_t VERSION = 1;
 const uint32_t ID = 34567154;
+const char* IMAGE_PATH = "image.bin";
+const char* DECRYPTED_IMAGE_PATH = "decrypted_image.bin";
+
+#define DEBUG
 
 enum Org {
     GU,
@@ -33,6 +36,14 @@ void close_socket(tcp::socket& socket) {
     if (socket.is_open())
         socket.close();
 }
+
+struct ImageHeader {
+    // Field sizes
+    uint32_t s1, s2, s3;
+
+    // SHA3 hash
+    std::string hash;
+} image_header;
 
 void send_update_check(tcp::socket& socket) {
     /**
@@ -50,7 +61,7 @@ void send_update_check(tcp::socket& socket) {
 
 bool receive_image(tcp::socket& socket, uint32_t image_size) {
     // Open output file for received image
-    std::ofstream out_file ("image.bin", std::ios::binary | std::ios::out);
+    std::ofstream out_file (IMAGE_PATH, std::ios::binary | std::ios::out);
 
     // Allocate buffer of 4 KB
     std::vector<uint8_t> buf (4096);
@@ -72,7 +83,7 @@ bool receive_image(tcp::socket& socket, uint32_t image_size) {
     out_file.close();
 }
 
-bool run_protocol(tcp::socket& socket, Org org) {
+bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     bool valid;
     
     // Receive buffers
@@ -158,22 +169,22 @@ bool run_protocol(tcp::socket& socket, Org org) {
         data = m3.or_();
     #endif
 
+    // Parse OrgResponse
+    OrgResponse ur;
+    valid = ur.ParseFromString(data);
+
+    if (!valid) {
+        std::cout << "Error parsing OrgResponse from: " << org << std::endl;
+        return false;
+    }
+
+    // Check nonce sent from org
+    if (ur.nd() != nd) {
+        std::cout << "Organization " << org << " authentication failed!";
+        return false;
+    }
+
     if (org == Org::GU) {
-        // Parse OrgResponse
-        UpdatingOrgResponse ur;
-        valid = ur.ParseFromString(data);
-
-        if (!valid) {
-            std::cout << "Error parsing OrgResponse from: " << org << std::endl;
-            return false;
-        }
-
-        // Check nonce sent from org
-        if (ur.nd() != nd) {
-            std::cout << "Organization " << org << " authentication failed!";
-            return false;
-        }
-
         // Get image length
         len = socket.receive(asio::buffer(buf));
         data = std::string(buf.begin(), buf.begin() + len);
@@ -182,7 +193,94 @@ bool run_protocol(tcp::socket& socket, Org org) {
         ui.ParseFromString(data);
         uint32_t image_size = ui.size();
 
+        // Tell server to start sending the update image
+        socket.send(asio::buffer("OK"));
+
+        // Receive the update image and write to IMAGE_PATH on disk
         receive_image(socket, image_size);
+    }
+    
+    else if (org == Org::GC) {
+        // Retrieve hash from the org
+        hash = ur.hc();
+    }
+
+    return true;
+}
+
+void read_image_header(const char* path) {
+    std::ifstream image (path, std::ios::binary | std::ios::in);
+    uint32_t seek_pos = 0;
+    
+    image.read(reinterpret_cast<char *>(&image_header.s1), 4);
+    
+    seek_pos += 4;
+    image.seekg(seek_pos);
+    image.read(reinterpret_cast<char *>(&image_header.s2), 4);
+    
+    seek_pos += 4;
+    image.seekg(seek_pos);
+    image.read(reinterpret_cast<char *>(&image_header.s3), 4);
+    
+    seek_pos += 4;
+    image.seekg(seek_pos);
+    image.read(&image_header.hash[0], HASH_SIZE);
+
+    image.close();
+}
+
+std::streampos get_file_size(const char* path) {
+    std::streampos fsize = 0;
+    std::ifstream file(path, std::ios::binary);
+
+    fsize = file.tellg();
+    file.seekg(0, std::ios::end);
+    fsize = file.tellg() - fsize;
+    file.close();
+
+    return fsize;
+}
+
+bool decrypt_image() {
+    auto image_size = get_file_size(IMAGE_PATH);
+    
+    // Ciphertext
+    std::string ciphertext;
+    ciphertext.reserve(image_size);
+
+    // Read entire update image into memory
+    std::ifstream image (IMAGE_PATH, std::ios::binary | std::ios::in);
+    std::ostringstream oss;
+    oss << image.rdbuf();
+    ciphertext = oss.str();
+    image.close();
+
+    // Decrypt the image
+    #ifndef DEBUG
+        RSADriver rsadriver;
+        std::string plaintext = rsadriver.decrypt(ciphertext);
+    #else
+        std::string plaintext = ciphertext;
+    #endif
+
+    // Write to disk
+    std::ofstream decrypted_image (DECRYPTED_IMAGE_PATH, std::ios::binary | std::ios::out);
+    decrypted_image.write(plaintext.data(), plaintext.size());
+
+    decrypted_image.close();
+
+    return true;
+}
+
+bool validate_hashes(std::vector<std::string>& hashes) {
+    read_image_header(DECRYPTED_IMAGE_PATH);
+
+    // Check confirming hashes against update image hash
+    for (std::string& hash: hashes) {
+        if (hash.compare(image_header.hash) == 0) {
+            std::cout << "Hash mismatch detected!" << std::endl;
+            return false;
+        }
     }
 
     return true;
@@ -199,14 +297,24 @@ int main(int argc, char** argv) {
         // Send update check to server
         send_update_check(socket);
 
+        // Variables to store hashes received from orgs
+        std::vector<std::string> hashes;
+        std::string hash;
+        hash.reserve(64);
+
         // Run protocol for GU
-        bool success = run_protocol(socket, Org::GU);
+        bool success = run_protocol(socket, Org::GU, hash);
         
         // Run protocol for all GC,i
         if (success) {
             for (int i = 0; i < NUM_ORGS-1; i++) {
-                if (!run_protocol(socket, Org::GC)) {
-                    success = false;
+                // Returns the hash sent by G_C,i
+                success = run_protocol(socket, Org::GC, hash);
+                hashes.push_back(hash);
+                
+                // Stop checking if one org fails
+                if (!success) {
+                    std::cout << "Confirming org #" << i << " failed the protocol!" << std::endl;
                     break;
                 }
             }
@@ -214,9 +322,14 @@ int main(int argc, char** argv) {
 
         socket.close();
 
-        if (success)
-            std::cout << "Protocol completed successfully!" << std::endl;
-
+        // Decrypt the update image (if applicable)
+        decrypt_image();
+            
+        // Check all received hashes
+        if (success && hashes.size() == NUM_ORGS-1 && validate_hashes(hashes)) {
+            std::cout << "Protocol completed successfully and all hashes match!" << std::endl;
+            std::cout << "Executing update..." << std::endl;
+        }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
