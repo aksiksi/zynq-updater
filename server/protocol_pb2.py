@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='protocol.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x0eprotocol.proto\"$\n\x0bUpdateCheck\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02ID\x18\x02 \x01(\r\"\"\n\x0cUpdateStatus\x12\x12\n\nsuccessful\x18\x01 \x01(\x08\"&\n\x0cOrgChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\"5\n\x0f\x44\x65viceChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02ND\x18\x02 \x01(\x04\x12\n\n\x02ID\x18\x03 \x01(\r\"-\n\x13UpdatingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\";\n\x15\x43onfirmingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\x12\n\n\x02HC\x18\x03 \x01(\x0c\"\x1b\n\x02M1\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02OC\x18\x02 \x01(\x0c\"\x10\n\x02M2\x12\n\n\x02\x44\x43\x18\x01 \x01(\x0c\"\x10\n\x02M3\x12\n\n\x02OR\x18\x01 \x01(\x0c\"\x1b\n\x0bUpdateImage\x12\x0c\n\x04size\x18\x01 \x01(\rb\x06proto3')
+  serialized_pb=_b('\n\x0eprotocol.proto\"$\n\x0bUpdateCheck\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02ID\x18\x02 \x01(\r\"\"\n\x0cUpdateStatus\x12\x12\n\nsuccessful\x18\x01 \x01(\x08\"&\n\x0cOrgChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\"5\n\x0f\x44\x65viceChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02ND\x18\x02 \x01(\x04\x12\n\n\x02ID\x18\x03 \x01(\r\"1\n\x0bOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\x12\n\n\x02HC\x18\x03 \x01(\x0c\"\x1b\n\x02M1\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02OC\x18\x02 \x01(\x0c\"\x10\n\x02M2\x12\n\n\x02\x44\x43\x18\x01 \x01(\x0c\"\x10\n\x02M3\x12\n\n\x02OR\x18\x01 \x01(\x0c\"\x1b\n\x0bUpdateImage\x12\x0c\n\x04size\x18\x01 \x01(\rb\x06proto3')
 )
 
 
@@ -177,67 +177,29 @@ _DEVICECHALLENGE = _descriptor.Descriptor(
 )
 
 
-_UPDATINGORGRESPONSE = _descriptor.Descriptor(
-  name='UpdatingOrgResponse',
-  full_name='UpdatingOrgResponse',
+_ORGRESPONSE = _descriptor.Descriptor(
+  name='OrgResponse',
+  full_name='OrgResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='ND', full_name='UpdatingOrgResponse.ND', index=0,
+      name='ND', full_name='OrgResponse.ND', index=0,
       number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='IG', full_name='UpdatingOrgResponse.IG', index=1,
-      number=2, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto3',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=187,
-  serialized_end=232,
-)
-
-
-_CONFIRMINGORGRESPONSE = _descriptor.Descriptor(
-  name='ConfirmingOrgResponse',
-  full_name='ConfirmingOrgResponse',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='ND', full_name='ConfirmingOrgResponse.ND', index=0,
-      number=1, type=4, cpp_type=4, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='IG', full_name='ConfirmingOrgResponse.IG', index=1,
+      name='IG', full_name='OrgResponse.IG', index=1,
       number=2, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='HC', full_name='ConfirmingOrgResponse.HC', index=2,
+      name='HC', full_name='OrgResponse.HC', index=2,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -255,8 +217,8 @@ _CONFIRMINGORGRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=234,
-  serialized_end=293,
+  serialized_start=187,
+  serialized_end=236,
 )
 
 
@@ -293,8 +255,8 @@ _M1 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=295,
-  serialized_end=322,
+  serialized_start=238,
+  serialized_end=265,
 )
 
 
@@ -324,8 +286,8 @@ _M2 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=324,
-  serialized_end=340,
+  serialized_start=267,
+  serialized_end=283,
 )
 
 
@@ -355,8 +317,8 @@ _M3 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=342,
-  serialized_end=358,
+  serialized_start=285,
+  serialized_end=301,
 )
 
 
@@ -386,16 +348,15 @@ _UPDATEIMAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=360,
-  serialized_end=387,
+  serialized_start=303,
+  serialized_end=330,
 )
 
 DESCRIPTOR.message_types_by_name['UpdateCheck'] = _UPDATECHECK
 DESCRIPTOR.message_types_by_name['UpdateStatus'] = _UPDATESTATUS
 DESCRIPTOR.message_types_by_name['OrgChallenge'] = _ORGCHALLENGE
 DESCRIPTOR.message_types_by_name['DeviceChallenge'] = _DEVICECHALLENGE
-DESCRIPTOR.message_types_by_name['UpdatingOrgResponse'] = _UPDATINGORGRESPONSE
-DESCRIPTOR.message_types_by_name['ConfirmingOrgResponse'] = _CONFIRMINGORGRESPONSE
+DESCRIPTOR.message_types_by_name['OrgResponse'] = _ORGRESPONSE
 DESCRIPTOR.message_types_by_name['M1'] = _M1
 DESCRIPTOR.message_types_by_name['M2'] = _M2
 DESCRIPTOR.message_types_by_name['M3'] = _M3
@@ -430,19 +391,12 @@ DeviceChallenge = _reflection.GeneratedProtocolMessageType('DeviceChallenge', (_
   ))
 _sym_db.RegisterMessage(DeviceChallenge)
 
-UpdatingOrgResponse = _reflection.GeneratedProtocolMessageType('UpdatingOrgResponse', (_message.Message,), dict(
-  DESCRIPTOR = _UPDATINGORGRESPONSE,
+OrgResponse = _reflection.GeneratedProtocolMessageType('OrgResponse', (_message.Message,), dict(
+  DESCRIPTOR = _ORGRESPONSE,
   __module__ = 'protocol_pb2'
-  # @@protoc_insertion_point(class_scope:UpdatingOrgResponse)
+  # @@protoc_insertion_point(class_scope:OrgResponse)
   ))
-_sym_db.RegisterMessage(UpdatingOrgResponse)
-
-ConfirmingOrgResponse = _reflection.GeneratedProtocolMessageType('ConfirmingOrgResponse', (_message.Message,), dict(
-  DESCRIPTOR = _CONFIRMINGORGRESPONSE,
-  __module__ = 'protocol_pb2'
-  # @@protoc_insertion_point(class_scope:ConfirmingOrgResponse)
-  ))
-_sym_db.RegisterMessage(ConfirmingOrgResponse)
+_sym_db.RegisterMessage(OrgResponse)
 
 M1 = _reflection.GeneratedProtocolMessageType('M1', (_message.Message,), dict(
   DESCRIPTOR = _M1,

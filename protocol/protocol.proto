@@ -22,15 +22,10 @@ message DeviceChallenge {
     uint32 ID = 3;
 }
 
-message UpdatingOrgResponse {
+message OrgResponse {
     uint64 ND = 1;
     uint32 IG = 2;
-}
-
-message ConfirmingOrgResponse {
-    uint64 ND = 1;
-    uint32 IG = 2;
-    bytes HC = 3; // Confirming hash
+    bytes HC = 3; // Confirming hash in case of G_{C,i}
 }
 
 message M1 {

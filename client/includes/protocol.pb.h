@@ -30,9 +30,6 @@
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
-class ConfirmingOrgResponse;
-class ConfirmingOrgResponseDefaultTypeInternal;
-extern ConfirmingOrgResponseDefaultTypeInternal _ConfirmingOrgResponse_default_instance_;
 class DeviceChallenge;
 class DeviceChallengeDefaultTypeInternal;
 extern DeviceChallengeDefaultTypeInternal _DeviceChallenge_default_instance_;
@@ -48,6 +45,9 @@ extern M3DefaultTypeInternal _M3_default_instance_;
 class OrgChallenge;
 class OrgChallengeDefaultTypeInternal;
 extern OrgChallengeDefaultTypeInternal _OrgChallenge_default_instance_;
+class OrgResponse;
+class OrgResponseDefaultTypeInternal;
+extern OrgResponseDefaultTypeInternal _OrgResponse_default_instance_;
 class UpdateCheck;
 class UpdateCheckDefaultTypeInternal;
 extern UpdateCheckDefaultTypeInternal _UpdateCheck_default_instance_;
@@ -57,9 +57,6 @@ extern UpdateImageDefaultTypeInternal _UpdateImage_default_instance_;
 class UpdateStatus;
 class UpdateStatusDefaultTypeInternal;
 extern UpdateStatusDefaultTypeInternal _UpdateStatus_default_instance_;
-class UpdatingOrgResponse;
-class UpdatingOrgResponseDefaultTypeInternal;
-extern UpdatingOrgResponseDefaultTypeInternal _UpdatingOrgResponse_default_instance_;
 
 namespace protobuf_protocol_2eproto {
 // Internal implementation detail -- do not call these.
@@ -494,24 +491,24 @@ class DeviceChallenge : public ::google::protobuf::Message /* @@protoc_insertion
 };
 // -------------------------------------------------------------------
 
-class UpdatingOrgResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:UpdatingOrgResponse) */ {
+class OrgResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:OrgResponse) */ {
  public:
-  UpdatingOrgResponse();
-  virtual ~UpdatingOrgResponse();
+  OrgResponse();
+  virtual ~OrgResponse();
 
-  UpdatingOrgResponse(const UpdatingOrgResponse& from);
+  OrgResponse(const OrgResponse& from);
 
-  inline UpdatingOrgResponse& operator=(const UpdatingOrgResponse& from) {
+  inline OrgResponse& operator=(const OrgResponse& from) {
     CopyFrom(from);
     return *this;
   }
   #if LANG_CXX11
-  UpdatingOrgResponse(UpdatingOrgResponse&& from) noexcept
-    : UpdatingOrgResponse() {
+  OrgResponse(OrgResponse&& from) noexcept
+    : OrgResponse() {
     *this = ::std::move(from);
   }
 
-  inline UpdatingOrgResponse& operator=(UpdatingOrgResponse&& from) noexcept {
+  inline OrgResponse& operator=(OrgResponse&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -521,29 +518,29 @@ class UpdatingOrgResponse : public ::google::protobuf::Message /* @@protoc_inser
   }
   #endif
   static const ::google::protobuf::Descriptor* descriptor();
-  static const UpdatingOrgResponse& default_instance();
+  static const OrgResponse& default_instance();
 
-  static inline const UpdatingOrgResponse* internal_default_instance() {
-    return reinterpret_cast<const UpdatingOrgResponse*>(
-               &_UpdatingOrgResponse_default_instance_);
+  static inline const OrgResponse* internal_default_instance() {
+    return reinterpret_cast<const OrgResponse*>(
+               &_OrgResponse_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
     4;
 
-  void Swap(UpdatingOrgResponse* other);
-  friend void swap(UpdatingOrgResponse& a, UpdatingOrgResponse& b) {
+  void Swap(OrgResponse* other);
+  friend void swap(OrgResponse& a, OrgResponse& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline UpdatingOrgResponse* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline OrgResponse* New() const PROTOBUF_FINAL { return New(NULL); }
 
-  UpdatingOrgResponse* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  OrgResponse* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
   void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
   void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const UpdatingOrgResponse& from);
-  void MergeFrom(const UpdatingOrgResponse& from);
+  void CopyFrom(const OrgResponse& from);
+  void MergeFrom(const OrgResponse& from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
@@ -559,111 +556,7 @@ class UpdatingOrgResponse : public ::google::protobuf::Message /* @@protoc_inser
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(UpdatingOrgResponse* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return NULL;
-  }
-  inline void* MaybeArenaPtr() const {
-    return NULL;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // uint64 ND = 1;
-  void clear_nd();
-  static const int kNDFieldNumber = 1;
-  ::google::protobuf::uint64 nd() const;
-  void set_nd(::google::protobuf::uint64 value);
-
-  // uint32 IG = 2;
-  void clear_ig();
-  static const int kIGFieldNumber = 2;
-  ::google::protobuf::uint32 ig() const;
-  void set_ig(::google::protobuf::uint32 value);
-
-  // @@protoc_insertion_point(class_scope:UpdatingOrgResponse)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::uint64 nd_;
-  ::google::protobuf::uint32 ig_;
-  mutable int _cached_size_;
-  friend struct protobuf_protocol_2eproto::TableStruct;
-};
-// -------------------------------------------------------------------
-
-class ConfirmingOrgResponse : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:ConfirmingOrgResponse) */ {
- public:
-  ConfirmingOrgResponse();
-  virtual ~ConfirmingOrgResponse();
-
-  ConfirmingOrgResponse(const ConfirmingOrgResponse& from);
-
-  inline ConfirmingOrgResponse& operator=(const ConfirmingOrgResponse& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  #if LANG_CXX11
-  ConfirmingOrgResponse(ConfirmingOrgResponse&& from) noexcept
-    : ConfirmingOrgResponse() {
-    *this = ::std::move(from);
-  }
-
-  inline ConfirmingOrgResponse& operator=(ConfirmingOrgResponse&& from) noexcept {
-    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
-      if (this != &from) InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-  #endif
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ConfirmingOrgResponse& default_instance();
-
-  static inline const ConfirmingOrgResponse* internal_default_instance() {
-    return reinterpret_cast<const ConfirmingOrgResponse*>(
-               &_ConfirmingOrgResponse_default_instance_);
-  }
-  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    5;
-
-  void Swap(ConfirmingOrgResponse* other);
-  friend void swap(ConfirmingOrgResponse& a, ConfirmingOrgResponse& b) {
-    a.Swap(&b);
-  }
-
-  // implements Message ----------------------------------------------
-
-  inline ConfirmingOrgResponse* New() const PROTOBUF_FINAL { return New(NULL); }
-
-  ConfirmingOrgResponse* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const ConfirmingOrgResponse& from);
-  void MergeFrom(const ConfirmingOrgResponse& from);
-  void Clear() PROTOBUF_FINAL;
-  bool IsInitialized() const PROTOBUF_FINAL;
-
-  size_t ByteSizeLong() const PROTOBUF_FINAL;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
-  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(ConfirmingOrgResponse* other);
+  void InternalSwap(OrgResponse* other);
   private:
   inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
     return NULL;
@@ -705,7 +598,7 @@ class ConfirmingOrgResponse : public ::google::protobuf::Message /* @@protoc_ins
   ::google::protobuf::uint32 ig() const;
   void set_ig(::google::protobuf::uint32 value);
 
-  // @@protoc_insertion_point(class_scope:ConfirmingOrgResponse)
+  // @@protoc_insertion_point(class_scope:OrgResponse)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -751,7 +644,7 @@ class M1 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
                &_M1_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    6;
+    5;
 
   void Swap(M1* other);
   friend void swap(M1& a, M1& b) {
@@ -863,7 +756,7 @@ class M2 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
                &_M2_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    7;
+    6;
 
   void Swap(M2* other);
   friend void swap(M2& a, M2& b) {
@@ -968,7 +861,7 @@ class M3 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_
                &_M3_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    8;
+    7;
 
   void Swap(M3* other);
   friend void swap(M3& a, M3& b) {
@@ -1073,7 +966,7 @@ class UpdateImage : public ::google::protobuf::Message /* @@protoc_insertion_poi
                &_UpdateImage_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    9;
+    8;
 
   void Swap(UpdateImage* other);
   friend void swap(UpdateImage& a, UpdateImage& b) {
@@ -1272,119 +1165,87 @@ inline void DeviceChallenge::set_id(::google::protobuf::uint32 value) {
 
 // -------------------------------------------------------------------
 
-// UpdatingOrgResponse
+// OrgResponse
 
 // uint64 ND = 1;
-inline void UpdatingOrgResponse::clear_nd() {
+inline void OrgResponse::clear_nd() {
   nd_ = GOOGLE_ULONGLONG(0);
 }
-inline ::google::protobuf::uint64 UpdatingOrgResponse::nd() const {
-  // @@protoc_insertion_point(field_get:UpdatingOrgResponse.ND)
+inline ::google::protobuf::uint64 OrgResponse::nd() const {
+  // @@protoc_insertion_point(field_get:OrgResponse.ND)
   return nd_;
 }
-inline void UpdatingOrgResponse::set_nd(::google::protobuf::uint64 value) {
+inline void OrgResponse::set_nd(::google::protobuf::uint64 value) {
   
   nd_ = value;
-  // @@protoc_insertion_point(field_set:UpdatingOrgResponse.ND)
+  // @@protoc_insertion_point(field_set:OrgResponse.ND)
 }
 
 // uint32 IG = 2;
-inline void UpdatingOrgResponse::clear_ig() {
+inline void OrgResponse::clear_ig() {
   ig_ = 0u;
 }
-inline ::google::protobuf::uint32 UpdatingOrgResponse::ig() const {
-  // @@protoc_insertion_point(field_get:UpdatingOrgResponse.IG)
+inline ::google::protobuf::uint32 OrgResponse::ig() const {
+  // @@protoc_insertion_point(field_get:OrgResponse.IG)
   return ig_;
 }
-inline void UpdatingOrgResponse::set_ig(::google::protobuf::uint32 value) {
+inline void OrgResponse::set_ig(::google::protobuf::uint32 value) {
   
   ig_ = value;
-  // @@protoc_insertion_point(field_set:UpdatingOrgResponse.IG)
-}
-
-// -------------------------------------------------------------------
-
-// ConfirmingOrgResponse
-
-// uint64 ND = 1;
-inline void ConfirmingOrgResponse::clear_nd() {
-  nd_ = GOOGLE_ULONGLONG(0);
-}
-inline ::google::protobuf::uint64 ConfirmingOrgResponse::nd() const {
-  // @@protoc_insertion_point(field_get:ConfirmingOrgResponse.ND)
-  return nd_;
-}
-inline void ConfirmingOrgResponse::set_nd(::google::protobuf::uint64 value) {
-  
-  nd_ = value;
-  // @@protoc_insertion_point(field_set:ConfirmingOrgResponse.ND)
-}
-
-// uint32 IG = 2;
-inline void ConfirmingOrgResponse::clear_ig() {
-  ig_ = 0u;
-}
-inline ::google::protobuf::uint32 ConfirmingOrgResponse::ig() const {
-  // @@protoc_insertion_point(field_get:ConfirmingOrgResponse.IG)
-  return ig_;
-}
-inline void ConfirmingOrgResponse::set_ig(::google::protobuf::uint32 value) {
-  
-  ig_ = value;
-  // @@protoc_insertion_point(field_set:ConfirmingOrgResponse.IG)
+  // @@protoc_insertion_point(field_set:OrgResponse.IG)
 }
 
 // bytes HC = 3;
-inline void ConfirmingOrgResponse::clear_hc() {
+inline void OrgResponse::clear_hc() {
   hc_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& ConfirmingOrgResponse::hc() const {
-  // @@protoc_insertion_point(field_get:ConfirmingOrgResponse.HC)
+inline const ::std::string& OrgResponse::hc() const {
+  // @@protoc_insertion_point(field_get:OrgResponse.HC)
   return hc_.GetNoArena();
 }
-inline void ConfirmingOrgResponse::set_hc(const ::std::string& value) {
+inline void OrgResponse::set_hc(const ::std::string& value) {
   
   hc_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_set:OrgResponse.HC)
 }
 #if LANG_CXX11
-inline void ConfirmingOrgResponse::set_hc(::std::string&& value) {
+inline void OrgResponse::set_hc(::std::string&& value) {
   
   hc_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_set_rvalue:OrgResponse.HC)
 }
 #endif
-inline void ConfirmingOrgResponse::set_hc(const char* value) {
+inline void OrgResponse::set_hc(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   hc_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_set_char:OrgResponse.HC)
 }
-inline void ConfirmingOrgResponse::set_hc(const void* value, size_t size) {
+inline void OrgResponse::set_hc(const void* value, size_t size) {
   
   hc_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_set_pointer:OrgResponse.HC)
 }
-inline ::std::string* ConfirmingOrgResponse::mutable_hc() {
+inline ::std::string* OrgResponse::mutable_hc() {
   
-  // @@protoc_insertion_point(field_mutable:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_mutable:OrgResponse.HC)
   return hc_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* ConfirmingOrgResponse::release_hc() {
-  // @@protoc_insertion_point(field_release:ConfirmingOrgResponse.HC)
+inline ::std::string* OrgResponse::release_hc() {
+  // @@protoc_insertion_point(field_release:OrgResponse.HC)
   
   return hc_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void ConfirmingOrgResponse::set_allocated_hc(::std::string* hc) {
+inline void OrgResponse::set_allocated_hc(::std::string* hc) {
   if (hc != NULL) {
     
   } else {
     
   }
   hc_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), hc);
-  // @@protoc_insertion_point(field_set_allocated:ConfirmingOrgResponse.HC)
+  // @@protoc_insertion_point(field_set_allocated:OrgResponse.HC)
 }
 
 // -------------------------------------------------------------------
@@ -1594,8 +1455,6 @@ inline void UpdateImage::set_size(::google::protobuf::uint32 value) {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
-// -------------------------------------------------------------------
-
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
