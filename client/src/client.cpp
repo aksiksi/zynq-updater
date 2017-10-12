@@ -16,14 +16,13 @@
 using asio::ip::tcp;
 
 // Socket params
-const std::string SERVER_HOST = "127.0.0.1";
+const char* SERVER_HOST = "127.0.0.1";
 const uint32_t PORT = 8080;
 
 // Protocol params
 const uint32_t NUM_ORGS = 2;
 const uint32_t VERSION = 1;
 const uint32_t ID = 34567154;
-const char ERR_MSG[1] = {0xFF};
 
 enum Org {
     GU,
@@ -44,9 +43,9 @@ void send_update_check(tcp::socket& socket) {
     UpdateCheck uc;
     uc.set_v(VERSION);
     uc.set_id(ID);
-    uc.SerializeToString(data);
+    uc.SerializeToString(&data);
     
-    socket.send(data);
+    socket.send(asio::buffer(data));
 }
 
 bool receive_image(tcp::socket& socket, uint32_t image_size) {
@@ -65,7 +64,7 @@ bool receive_image(tcp::socket& socket, uint32_t image_size) {
         }
 
         socket.receive(asio::buffer(buf));
-        out_file.write(buf.data(), buf.size());
+        out_file.write(reinterpret_cast<char *>(buf.data()), buf.size());
     }
 
     out_file.close();
@@ -81,12 +80,6 @@ bool run_protocol(tcp::socket& socket, Org org) {
     // Store incoming M1 in 512 byte receive buffer
     socket.receive(asio::buffer(buf));
     data = std::string(buf.begin(), buf.end());
-
-    // Version number is current; stop
-    if (data.size() == 1 & data.at(0) == 0xFF) {
-        std::cout << "Version number is current; no need to continue." << std::endl;
-        return false;
-    }
     
     // Parse M1 using protobuf
     M1 m1;
@@ -122,7 +115,7 @@ bool run_protocol(tcp::socket& socket, Org org) {
     const uint32_t nd = ng >> 1;
     dc.set_nd(nd); // Generate a "random" nonce
     
-    dc.SerializeToString(data);
+    dc.SerializeToString(&data);
 
     #ifndef DEBUG
         // Determine pub key to use for encryption
@@ -137,10 +130,10 @@ bool run_protocol(tcp::socket& socket, Org org) {
 
     M2 m2;
     m2.set_dc(data);
-    m2.SerializeToString(data);
+    m2.SerializeToString(&data);
 
     // Send back to org
-    socket.send(data);
+    socket.send(asio::buffer(data));
 
     // Get final reply from org as M3
     socket.receive(asio::buffer(buf));
@@ -155,9 +148,9 @@ bool run_protocol(tcp::socket& socket, Org org) {
     }
 
     #ifndef DEBUG
-        data = rsadriver.decrypt(m3.or());
+        data = rsadriver.decrypt(m3.or_());
     #else
-        data = m3.or();
+        data = m3.or_();
     #endif
 
     if (org == Org::GU) {
@@ -193,10 +186,10 @@ bool run_protocol(tcp::socket& socket, Org org) {
 int main(int argc, char** argv) {
     try {
         asio::io_service io_service;
+        asio::ip::tcp::endpoint endpoint (asio::ip::address::from_string(SERVER_HOST), PORT);
         
         tcp::socket socket (io_service);
-        tcp::resolver resolver (io_service);
-        asio::connect (socket, resolver.resolve({SERVER_HOST, PORT}));
+        socket.connect(endpoint);
 
         // Send update check to server
         send_update_check(socket);
