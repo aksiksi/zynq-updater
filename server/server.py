@@ -124,7 +124,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         self.num_auths += 1
 
         # Build OrgResponse message and send it back to client
-        ur = protocol_pb2.UpdatingOrgResponse()
+        ur = protocol_pb2.OrgResponse()
         ur.ND = dc.ND
         ur.IG = I_GU
 
@@ -145,6 +145,9 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
             ui = protocol_pb2.UpdateImage()
             ui.size = len(content)
             self.request.sendall(ui.SerializeToString())
+
+            # Wait for OK to continue
+            _ = self.request.recv(512)
             
             if not DEBUG:
                 self.request.sendall(self.d_rsa.encrypt(content))
@@ -191,7 +194,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         self.num_auths += 1
 
         # Build OrgResponse message and send it back to client
-        cr = protocol_pb2.ConfirmingOrgResponse()
+        cr = protocol_pb2.OrgResponse()
         cr.ND = dc.ND
         cr.IG = I_GC
 

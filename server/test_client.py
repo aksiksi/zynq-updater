@@ -47,7 +47,7 @@ data = s.recv(512)
 
 m3 = protocol_pb2.M3()
 m3.ParseFromString(data)
-ur = protocol_pb2.UpdatingOrgResponse()
+ur = protocol_pb2.OrgResponse()
 ur.ParseFromString(m3.OR)
 
 print('Received from GU: M3(UpdatingOrgResponse(ND={0}, IG={1}))'.format(ur.ND, ur.IG))
@@ -58,6 +58,7 @@ ui = protocol_pb2.UpdateImage()
 ui.ParseFromString(data)
 
 print('Received from GU: UpdateImage(size={0})'.format(ui.size))
+s.send(b'OK')
 
 # Receive the update image
 data = s.recv(ui.size) # 10 MB buffer
@@ -92,7 +93,7 @@ data = s.recv(512)
 
 m3 = protocol_pb2.M3()
 m3.ParseFromString(data)
-ur = protocol_pb2.ConfirmingOrgResponse()
+ur = protocol_pb2.OrgResponse()
 ur.ParseFromString(m3.OR)
 
 print('Received from GC: M3(ConfirmingOrgResponse(ND={0}, IG={1}, HC={2}))'.format(ur.ND, ur.IG, ur.HC))
