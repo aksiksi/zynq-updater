@@ -51,3 +51,7 @@ message M3 {
     // {OrgResponse}D_pub
     bytes OR = 1; // Encrypted OrgResponse
 }
+
+message UpdateImage {
+    uint32 size = 1;
+}

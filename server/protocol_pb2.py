@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='protocol.proto',
   package='',
   syntax='proto3',
-  serialized_pb=_b('\n\x0eprotocol.proto\"$\n\x0bUpdateCheck\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02ID\x18\x02 \x01(\r\"\"\n\x0cUpdateStatus\x12\x12\n\nsuccessful\x18\x01 \x01(\x08\"&\n\x0cOrgChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\"5\n\x0f\x44\x65viceChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02ND\x18\x02 \x01(\x04\x12\n\n\x02ID\x18\x03 \x01(\r\"-\n\x13UpdatingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\";\n\x15\x43onfirmingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\x12\n\n\x02HC\x18\x03 \x01(\x0c\"\x1b\n\x02M1\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02OC\x18\x02 \x01(\x0c\"\x10\n\x02M2\x12\n\n\x02\x44\x43\x18\x01 \x01(\x0c\"\x10\n\x02M3\x12\n\n\x02OR\x18\x01 \x01(\x0c\x62\x06proto3')
+  serialized_pb=_b('\n\x0eprotocol.proto\"$\n\x0bUpdateCheck\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02ID\x18\x02 \x01(\r\"\"\n\x0cUpdateStatus\x12\x12\n\nsuccessful\x18\x01 \x01(\x08\"&\n\x0cOrgChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\"5\n\x0f\x44\x65viceChallenge\x12\n\n\x02NG\x18\x01 \x01(\x04\x12\n\n\x02ND\x18\x02 \x01(\x04\x12\n\n\x02ID\x18\x03 \x01(\r\"-\n\x13UpdatingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\";\n\x15\x43onfirmingOrgResponse\x12\n\n\x02ND\x18\x01 \x01(\x04\x12\n\n\x02IG\x18\x02 \x01(\r\x12\n\n\x02HC\x18\x03 \x01(\x0c\"\x1b\n\x02M1\x12\t\n\x01V\x18\x01 \x01(\r\x12\n\n\x02OC\x18\x02 \x01(\x0c\"\x10\n\x02M2\x12\n\n\x02\x44\x43\x18\x01 \x01(\x0c\"\x10\n\x02M3\x12\n\n\x02OR\x18\x01 \x01(\x0c\"\x1b\n\x0bUpdateImage\x12\x0c\n\x04size\x18\x01 \x01(\rb\x06proto3')
 )
 
 
@@ -359,6 +359,37 @@ _M3 = _descriptor.Descriptor(
   serialized_end=358,
 )
 
+
+_UPDATEIMAGE = _descriptor.Descriptor(
+  name='UpdateImage',
+  full_name='UpdateImage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='size', full_name='UpdateImage.size', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=360,
+  serialized_end=387,
+)
+
 DESCRIPTOR.message_types_by_name['UpdateCheck'] = _UPDATECHECK
 DESCRIPTOR.message_types_by_name['UpdateStatus'] = _UPDATESTATUS
 DESCRIPTOR.message_types_by_name['OrgChallenge'] = _ORGCHALLENGE
@@ -368,6 +399,7 @@ DESCRIPTOR.message_types_by_name['ConfirmingOrgResponse'] = _CONFIRMINGORGRESPON
 DESCRIPTOR.message_types_by_name['M1'] = _M1
 DESCRIPTOR.message_types_by_name['M2'] = _M2
 DESCRIPTOR.message_types_by_name['M3'] = _M3
+DESCRIPTOR.message_types_by_name['UpdateImage'] = _UPDATEIMAGE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 UpdateCheck = _reflection.GeneratedProtocolMessageType('UpdateCheck', (_message.Message,), dict(
@@ -432,6 +464,13 @@ M3 = _reflection.GeneratedProtocolMessageType('M3', (_message.Message,), dict(
   # @@protoc_insertion_point(class_scope:M3)
   ))
 _sym_db.RegisterMessage(M3)
+
+UpdateImage = _reflection.GeneratedProtocolMessageType('UpdateImage', (_message.Message,), dict(
+  DESCRIPTOR = _UPDATEIMAGE,
+  __module__ = 'protocol_pb2'
+  # @@protoc_insertion_point(class_scope:UpdateImage)
+  ))
+_sym_db.RegisterMessage(UpdateImage)
 
 
 # @@protoc_insertion_point(module_scope)
