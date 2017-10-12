@@ -55,16 +55,18 @@ bool receive_image(tcp::socket& socket, uint32_t image_size) {
     // Allocate buffer of 4 KB
     std::vector<uint8_t> buf (4096);
 
-    uint32_t read = 0;
+    // Bytes read from socket
+    size_t len;
+
+    // Total bytes read
+    uint32_t total_read = 0;
 
     // Keep reading while data available
-    while (read < image_size) {
-        if ((read + buf.size()) > image_size) {
-            buf.resize(image_size - read);
-        }
+    while (total_read < image_size) {
+        len = socket.receive(asio::buffer(buf));
+        out_file.write(reinterpret_cast<char *>(buf.data()), len);
 
-        socket.receive(asio::buffer(buf));
-        out_file.write(reinterpret_cast<char *>(buf.data()), buf.size());
+        total_read += len;
     }
 
     out_file.close();
@@ -72,14 +74,17 @@ bool receive_image(tcp::socket& socket, uint32_t image_size) {
 
 bool run_protocol(tcp::socket& socket, Org org) {
     bool valid;
+    
+    // Receive buffers
     std::string data;
     data.reserve(512);
-    
+
+    size_t len;
     std::vector<uint8_t> buf (512);
 
     // Store incoming M1 in 512 byte receive buffer
-    socket.receive(asio::buffer(buf));
-    data = std::string(buf.begin(), buf.end());
+    len = socket.receive(asio::buffer(buf));
+    data = std::string(buf.begin(), buf.begin() + len);
     
     // Parse M1 using protobuf
     M1 m1;
@@ -136,8 +141,8 @@ bool run_protocol(tcp::socket& socket, Org org) {
     socket.send(asio::buffer(data));
 
     // Get final reply from org as M3
-    socket.receive(asio::buffer(buf));
-    data = std::string(buf.begin(), buf.end());
+    len = socket.receive(asio::buffer(buf));
+    data = std::string(buf.begin(), buf.begin() + len);
 
     M3 m3;
     valid = m3.ParseFromString(data);
@@ -170,8 +175,8 @@ bool run_protocol(tcp::socket& socket, Org org) {
         }
 
         // Get image length
-        socket.receive(asio::buffer(buf));
-        data = std::string(buf.begin(), buf.end());
+        len = socket.receive(asio::buffer(buf));
+        data = std::string(buf.begin(), buf.begin() + len);
         
         UpdateImage ui;
         ui.ParseFromString(data);
