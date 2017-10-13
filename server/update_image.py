@@ -8,29 +8,29 @@ import sha3
 """
     Provides functions to build and read an update image defined by a custom binary image format.
 
-    The following description applies to the case of the Zynq, but can be generalized.
-
-    Input: BOOT.bin, image.ub, app (32-bit ARM ELF)
-    Output: update image
-
     Update image format:
 
-        Header (76 bytes):
+        Header:
         
-            4 bytes        4 bytes       4 bytes                   64 bytes
-        -------------------------------------------------------------------------------------
-        | len(BOOT.bin) | len(image.ub) | len(app) | Keccak512(BOOT.bin || image.ub || app) |
-        -------------------------------------------------------------------------------------
+            1 byte       4 bytes       4 bytes     ...     4 bytes                      64 bytes
+        +------------+-------------+-------------+-----+-------------+----------------------------------------------+
+        | num_fields | len(file_1) | len(file_2) | ... | len(file_n) | Keccak512(file_1 || file_2 || ... || file_n) |
+        +------------+-------------+-------------+-----+-------------+----------------------------------------------+
         
-        Body (variable bytes):
+        Total header length: num_fields * 4 + 64 bytes
 
-        -----------------------------
-        | BOOT.bin | image.ub | app |
-        -----------------------------
+        Body:
 
-    Functions:
-        - build: given input files, builds an update image as defined above, and returns SHA-3 hash of the image
-        - read_header: reads in an update image and returns its header information
+        +--------+-----------------------+
+        | file_1 | file_2 | ... | file_n |
+        +--------+-----------------------+
+
+        Total body length: len(file_1) + len(file_2) + ... + len(file_n)
+
+        The following description applies to the case of the Zynq, but can be generalized.
+
+        Input: BOOT.bin, image.ub, app (32-bit ARM ELF)
+        Output: update image
 """
 
 def convert_binary(b):
