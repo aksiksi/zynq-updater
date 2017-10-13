@@ -355,8 +355,6 @@ int main(int argc, char** argv) {
             
             // Decrypt the update image (if applicable)
             decrypt_image();
-    
-            std::cout << "Update image decrypted in " << duration << " seconds" << std::endl;
         }
             
         // Check all received hashes
