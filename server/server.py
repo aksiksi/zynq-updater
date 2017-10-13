@@ -11,7 +11,7 @@ import rsakeys
 DEBUG = True
 
 # Encryption
-ENCRYPT = False
+ENCRYPT = True
 
 # Protocol states
 IDLE = 1
@@ -149,14 +149,20 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
 
             # Send the length of the update image first to simplify buffer allocation
             ui = protocol_pb2.UpdateImage()
-            ui.size = len(content)
+            
+            if ENCRYPT:
+                encrypted = self.d_rsa.encrypt(content)
+                ui.size = len(encrypted)
+            else:
+                ui.size = len(content)
+            
             self.request.sendall(ui.SerializeToString())
 
             # Wait for OK to continue
             _ = self.request.recv(512)
             
             if ENCRYPT:
-                self.request.sendall(self.d_rsa.encrypt(content))
+                self.request.sendall(encrypted)
             else:
                 self.request.sendall(content)
 
