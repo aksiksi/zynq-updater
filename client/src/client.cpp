@@ -222,7 +222,7 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
 
 void read_image_header(const char* path) {
     std::ifstream image (path, std::ios::binary | std::ios::in);
-    uint32_t seek_pos = 0;
+    uint32_t seek_pos = 1; // Skip length byte at start of file
     
     image.read(reinterpret_cast<char *>(&image_header.s1), 4);
     
@@ -269,7 +269,7 @@ bool decrypt_image() {
 
     // Decrypt the image
     #ifdef ENCRYPT
-        std::cout << "Decrypting the update image..." << std::endl;
+        std::cout << "Decrypting the update image: Size = " << image_size << std::endl;
         RSADriver rsadriver;
         std::string plaintext = rsadriver.decrypt(ciphertext);
     #else
@@ -287,6 +287,8 @@ bool decrypt_image() {
 
 bool validate_hashes(std::vector<std::string>& hashes) {
     read_image_header(DECRYPTED_IMAGE_PATH);
+
+    // TODO: Compute update image hash using SHA-3 core
 
     // Check confirming hashes against update image hash
     for (std::string& hash: hashes) {
@@ -324,6 +326,11 @@ int main(int argc, char** argv) {
         std::string hash;
         hash.reserve(64);
 
+        // Start timing the protocol
+        double duration = 0;
+        std::time_t start, end;
+        std::time(&start);
+
         // Run protocol for GU
         bool success = run_protocol(socket, Org::GU, hash);
         
@@ -344,21 +351,20 @@ int main(int argc, char** argv) {
         socket.close();
 
         if (success) {
-            std::cout << "Protocol completed successfully!" << std::endl;
+            std::cout << "Authentication completed successfully!" << std::endl;
             
             // Decrypt the update image (if applicable)
-            std::time_t start, end;
-            std::time(&start);
             decrypt_image();
-            std::time(&end);
-            
-            double duration = std::difftime(end, start);
+    
             std::cout << "Update image decrypted in " << duration << " seconds" << std::endl;
         }
             
         // Check all received hashes
         if (success && hashes.size() == NUM_ORGS-1 && validate_hashes(hashes)) {
-            std::cout << "Protocol completed successfully and all hashes match!" << std::endl;
+            std::time(&end);
+            duration = std::difftime(end, start);
+            
+            std::cout << "Protocol completed successfully in " << duration << " seconds and all hashes match!" << std::endl;
             std::cout << "Executing update..." << std::endl;
         } else {
             std::cout << "Protocol failed!" << std::endl;
