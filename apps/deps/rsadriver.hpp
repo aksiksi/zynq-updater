@@ -40,14 +40,14 @@ public:
     bool pkcs1 = true;
 private:
     // Encrypts or decrypts given data, based on provided key
-    std::string compute_rsa(std::vector<std::string>& data, RSAKey key);
+    std::string compute_rsa(const std::string& data, RSAKey key);
 
     // Strip PKCS#1 v1.5 padding from a given decrypted plaintext
-    std::string strip_pkcs1_padding(const std::string& plaintext);
+    std::string strip_pkcs1_padding(const std::string& plaintext, bool is_last);
 
-    // Write a single 512 bit chunk for decryption
-    void write_chunk(const uint8_t* chunk_ptr);
+    // Write a single 512 bit chunk
+    void write_chunk(const std::string& chunk);
 
     // Read a single 512 bit chunk
-    void read_chunk(std::string& plaintext);
+    void read_chunk(std::string& chunk);
 };
