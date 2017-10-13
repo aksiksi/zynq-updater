@@ -60,7 +60,7 @@ def build_image(inputs=['BOOT.bin', 'image.ub', 'app'], output_path='output_imag
 
     return hash
 
-def read_image_header(image_path, num_fields=3):
+def read_image_header(image_path):
     """
         Reads in an update image and returns its header contents.
 
@@ -73,8 +73,11 @@ def read_image_header(image_path, num_fields=3):
     header = []
     
     with open(image_path, 'rb') as f:
+        # Read in field count
+        num_fields = f.read(1)[0]
+
+        # Read in each length field
         for i in range(num_fields):
-            # Read in each length field
             b = f.read(4)
 
             # Unpack to an int
@@ -96,6 +99,10 @@ def write_image_header(output_image, lengths):
             - output_image: output image file -> (file object)
             - lengths: list of lengths of each input file -> (list of int)
     """
+    # Write number of fields as unsigned char
+    b = struct.pack('<B', len(lengths))
+    output_image.write(b)
+
     # Write input file lengths
     for l in lengths:
         # Convert each int into to 4 bytes in little endian (<) format
@@ -146,7 +153,7 @@ def write_image_body(output_image, inputs, lengths):
 
     # Seek back to hash position and write hash to output file
     num_lengths = len(lengths) * 4
-    output_image.seek(num_lengths)
+    output_image.seek(1 + num_lengths)
     output_image.write(k.digest())
 
     return k.hexdigest()
