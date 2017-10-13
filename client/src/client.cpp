@@ -11,7 +11,6 @@
 
 #include "sha3driver.hpp"
 #include "rsadriver.hpp"
-#include "tests.hpp"
 
 using asio::ip::tcp;
 
@@ -301,6 +300,14 @@ bool validate_hashes(std::vector<std::string>& hashes) {
     return true;
 }
 
+void execute_update() {
+    // Extract image into seperate files (BOOT.bin, image.ub, application)
+
+    // Back up old files on SD card (shell?)
+    
+    // Move new files to SD card (shell?)
+}
+
 int main(int argc, char** argv) {
     if (argc < 3) {
         std::cout << "Usage: zynq-updater <ip> <port>" << std::endl;
@@ -359,11 +366,13 @@ int main(int argc, char** argv) {
             
         // Check all received hashes
         if (success && hashes.size() == NUM_ORGS-1 && validate_hashes(hashes)) {
+            std::cout << "Executing update..." << std::endl;
+            execute_update();
+            
             std::time(&end);
             duration = std::difftime(end, start);
             
             std::cout << "Protocol completed successfully in " << duration << " seconds and all hashes match!" << std::endl;
-            std::cout << "Executing update..." << std::endl;
         } else {
             std::cout << "Protocol failed!" << std::endl;
         }
