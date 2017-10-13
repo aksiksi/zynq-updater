@@ -14,10 +14,6 @@
 
 using asio::ip::tcp;
 
-// Socket params
-const char* SERVER_HOST = "127.0.0.1";
-const uint32_t PORT = 8080;
-
 // Protocol params
 const uint32_t NUM_ORGS = 2;
 const uint32_t VERSION = 1;
@@ -290,9 +286,18 @@ bool validate_hashes(std::vector<std::string>& hashes) {
 }
 
 int main(int argc, char** argv) {
+    if (argc < 3) {
+        std::cout << "Usage: zynq-updater <ip> <port>";
+        return 0;
+    }
+
+    // Get host and port from cmdline args
+    const char* server_host = argv[1];
+    const uint32_t port = std::stoi(argv[2], nullptr);
+
     try {
         asio::io_service io_service;
-        asio::ip::tcp::endpoint endpoint (asio::ip::address::from_string(SERVER_HOST), PORT);
+        asio::ip::tcp::endpoint endpoint (asio::ip::address::from_string(server_host), port);
         
         tcp::socket socket (io_service);
         socket.connect(endpoint);
