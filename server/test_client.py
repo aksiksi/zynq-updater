@@ -61,9 +61,14 @@ print('Received from GU: UpdateImage(size={0})'.format(ui.size))
 s.send(b'OK')
 
 # Receive the update image
-data = s.recv(ui.size) # 10 MB buffer
+image = b''
+
+# Keep reading until update receive
+while len(image) < ui.size:
+    image += s.recv(4096)
+
+print('Received image!')
 s.send(b'OK')
-print('Received image: {0}'.format(data))
 
 ### Now for GC
 
