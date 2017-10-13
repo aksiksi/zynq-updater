@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "axidriver.hpp"
-#include "utils.hpp"
+#include "deps/axidriver.hpp"
+#include "deps/utils.hpp"
 
 #define DEVICE_DNA_ADDRESS 0x43C30000
 
