@@ -7,8 +7,11 @@ from update_image import read_image_header
 import rsa512
 import rsakeys
 
-# Debug mode: no encryption
+# Debug mode: verbose output
 DEBUG = True
+
+# Encryption
+ENCRYPT = False
 
 # Protocol states
 IDLE = 1
@@ -81,7 +84,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         m1.V = V
 
         # Encrypt if not in debug mode
-        if not DEBUG:
+        if ENCRYPT:
             m1.OC = self.d_rsa.encrypt(oc.SerializeToString())
         else:
             m1.OC = oc.SerializeToString()
@@ -101,7 +104,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
             m2.ParseFromString(data)
 
             # Decrypt and parse DeviceChallenge message
-            if not DEBUG:
+            if ENCRYPT:
                 dc_msg = self.gu_rsa.decrypt(m2.DC)
             else:
                 dc_msg = m2.DC
@@ -130,14 +133,15 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
 
         m3 = protocol_pb2.M3()
 
-        if not DEBUG:
+        if ENCRYPT:
             m3.OR = self.d_rsa.encrypt(ur.SerializeToString())
         else:
             m3.OR = ur.SerializeToString()
 
         self.request.sendall(m3.SerializeToString())
 
-        print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={2}'.format(ur.ND, ur.IG, self.ID))
+        if DEBUG:
+            print('- GU sent UpdatingOrgResponse(ND={0}, IG={1}) to ID={2}'.format(ur.ND, ur.IG, self.ID))
 
         # Next, send the update image
         with open(IMAGE_PATH, 'rb') as f:
@@ -151,7 +155,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
             # Wait for OK to continue
             _ = self.request.recv(512)
             
-            if not DEBUG:
+            if ENCRYPT:
                 self.request.sendall(self.d_rsa.encrypt(content))
             else:
                 self.request.sendall(content)
@@ -159,7 +163,8 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
         # Wait for client to confirm
         _ = self.request.recv(512)
 
-        print('- GU sent update image to ID={0}'.format(self.ID))
+        if DEBUG:
+            print('- GU sent update image to ID={0}'.format(self.ID))
 
         # Authenticate GC next
         self.current_state = AUTH
@@ -176,7 +181,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
             m2.ParseFromString(data)
 
             # Decrypt and parse DeviceChallenge message
-            if not DEBUG:
+            if ENCRYPT:
                 dc_msg = self.gc_rsa.decrypt(m2.DC)
             else:
                 dc_msg = m2.DC
@@ -208,7 +213,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
 
         m3 = protocol_pb2.M3()
 
-        if not DEBUG:
+        if ENCRYPT:
             m3.OR = self.d_rsa.encrypt(cr.SerializeToString())
         else:
             m3.OR = cr.SerializeToString()
@@ -251,7 +256,7 @@ class ProtocolStateHandler(socketserver.BaseRequestHandler):
                 running = False
 
 if __name__ == "__main__":
-    HOST, PORT = 'localhost', 8080
+    HOST, PORT = '0.0.0.0', 8080
 
     server = socketserver.TCPServer((HOST, PORT), ProtocolStateHandler)
     server.serve_forever()

@@ -21,12 +21,20 @@ const uint32_t ID = 34567154;
 const char* IMAGE_PATH = "image.bin";
 const char* DECRYPTED_IMAGE_PATH = "decrypted_image.bin";
 
-#define DEBUG
+#define DEBUG // Print debug messages
+#define ENCRYPT // If defined, protocol is encrypted
 
 enum Org {
     GU,
     GC
 };
+
+void print_binary_string(std::string& str) {
+    for (int i = 0; i < str.size(); i++)
+        std::cout << (int)str.at(i) << " ";
+
+    std::cout << std::endl;
+}
 
 void close_socket(tcp::socket& socket) {
     if (socket.is_open())
@@ -101,11 +109,12 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     valid = m1.ParseFromString(data);
 
     if (!valid) {
+        print_binary_string(data);
         std::cout << "Error parsing M1 from: " << org << std::endl;
         return false;
     }
 
-    #ifndef DEBUG
+    #ifdef ENCRYPT
         RSADriver rsadriver;
         data = rsadriver.decrypt(m1.oc());
     #else
@@ -116,7 +125,8 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     OrgChallenge oc;
     valid = oc.ParseFromString(data);
     if (!valid) {
-        std::cout << "Error parsing OrgChallenge from: " << org << std::endl;
+        print_binary_string(data);
+        std::cout << std::endl << "Error parsing OrgChallenge from: " << org << std::endl;
         return false;
     }
 
@@ -132,7 +142,7 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     
     dc.SerializeToString(&data);
 
-    #ifndef DEBUG
+    #ifdef ENCRYPT
         // Determine pub key to use for encryption
         RSAKey key;
         if (org == Org::GU)
@@ -158,11 +168,12 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     valid = m3.ParseFromString(data);
 
     if (!valid) {
+        print_binary_string(data);
         std::cout << "Error parsing M3 from: " << org << std::endl;
         return false;
     }
 
-    #ifndef DEBUG
+    #ifdef ENCRYPT
         data = rsadriver.decrypt(m3.or_());
     #else
         data = m3.or_();
@@ -173,6 +184,7 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     valid = ur.ParseFromString(data);
 
     if (!valid) {
+        print_binary_string(data);
         std::cout << "Error parsing OrgResponse from: " << org << std::endl;
         return false;
     }
@@ -255,7 +267,7 @@ bool decrypt_image() {
     image.close();
 
     // Decrypt the image
-    #ifndef DEBUG
+    #ifdef ENCRYPT
         RSADriver rsadriver;
         std::string plaintext = rsadriver.decrypt(ciphertext);
     #else
@@ -287,7 +299,7 @@ bool validate_hashes(std::vector<std::string>& hashes) {
 
 int main(int argc, char** argv) {
     if (argc < 3) {
-        std::cout << "Usage: zynq-updater <ip> <port>";
+        std::cout << "Usage: zynq-updater <ip> <port>" << std::endl;
         return 0;
     }
 
