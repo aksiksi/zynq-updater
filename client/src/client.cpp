@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <ctime>
 
 #define ASIO_STANDALONE // Do not use Boost
 #include "asio.hpp"
@@ -268,6 +269,7 @@ bool decrypt_image() {
 
     // Decrypt the image
     #ifdef ENCRYPT
+        std::cout << "Decrypting the update image..." << std::endl;
         RSADriver rsadriver;
         std::string plaintext = rsadriver.decrypt(ciphertext);
     #else
@@ -335,20 +337,31 @@ int main(int argc, char** argv) {
                 // Stop checking if one org fails
                 if (!success) {
                     std::cout << "Confirming org #" << i << " failed the protocol!" << std::endl;
-                    break;
                 }
             }
         }
 
         socket.close();
 
-        // Decrypt the update image (if applicable)
-        decrypt_image();
+        if (success) {
+            std::cout << "Protocol completed successfully!" << std::endl;
+            
+            // Decrypt the update image (if applicable)
+            std::time_t start, end;
+            std::time(&start);
+            decrypt_image();
+            std::time(&end);
+            
+            double duration = std::difftime(end, start);
+            std::cout << "Update image decrypted in " << duration << " seconds" << std::endl;
+        }
             
         // Check all received hashes
         if (success && hashes.size() == NUM_ORGS-1 && validate_hashes(hashes)) {
             std::cout << "Protocol completed successfully and all hashes match!" << std::endl;
             std::cout << "Executing update..." << std::endl;
+        } else {
+            std::cout << "Protocol failed!" << std::endl;
         }
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
