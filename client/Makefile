@@ -11,7 +11,7 @@ LIBS   := $(wildcard $(LIBDIR)/*.a)
 ASIO_DIR := $(DEPDIR)/asio/asio/include
 PROTOBUF_DIR := $(DEPDIR)/protobuf/src
 
-CC := g++
+CC := arm-linux-gnueabihf-g++
 CCFLAGS  := -Wall -std=c++11
 INCLUDES := -I$(INCDIR) -I$(ASIO_DIR) -I$(PROTOBUF_DIR)
 LIBS := -L $(LIBDIR) -l protobuf -l pthread

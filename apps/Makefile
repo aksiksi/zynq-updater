@@ -1,4 +1,4 @@
-CC := g++
+CC := arm-linux-gnueabihf-g++
 CCFLAGS := -std=c++11 -Wall
 
 sha3: sha3.cpp
