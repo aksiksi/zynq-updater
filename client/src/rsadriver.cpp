@@ -91,6 +91,10 @@ std::string RSADriver::strip_pkcs1_padding(const std::string& plaintext, bool is
     if (is_last) {
         // Get pad_size
         const uint8_t pad_size = (uint8_t)chunk.at(0);
+
+        // Padding invalid -> return the chunk as-is
+        if (pad_size >= PKCS1_CHUNK_SIZE)
+            return chunk;
         
         // Check for valid padding
         uint8_t count = 1;
