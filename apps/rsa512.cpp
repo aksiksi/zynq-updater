@@ -6,11 +6,11 @@
 #include "deps/rsadriver.hpp"
 
 int main(int argc, char** argv) {
-    if (argc < 2) {
-        std::cout << "Usage: rsa512 <path_to_file*>" << std::endl;
+    if (argc < 3) {     
+        std::cout << "Usage: rsa512 <e[ncrypt]/d[ecrypt]> <path_to_file*>" << std::endl;
     }
 
-    for (int i = 1; i < argc; i++) {
+    for (int i = 2; i < argc; i++) {
         // Load file from disk
         std::ifstream in_file (argv[i], std::ios::binary | std::ios::out);
     
@@ -23,14 +23,19 @@ int main(int argc, char** argv) {
         // Run file through RSA-512 core with device encryption key
         RSADriver driver;
 
-        // Time the hashing process
+        // Time the encryption/decryption process
         std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
-        const std::string enc = driver.encrypt(contents, RSAKey::D_PRV);
+        
+        if (argv[1][0] == 'e')
+            const std::string enc = driver.encrypt(contents, RSAKey::GU_PUB);
+        else
+            const std::string enc = driver.decrypt(contents);
+        
         std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
         
-        std::cout << "Duration for " << argv[i] << ": " << duration << std::endl;
+        std::cout << "Duration for " << argv[1] << " of " << argv[i] << ": " << duration << std::endl;
     }
 
     return 0;
