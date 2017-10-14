@@ -144,12 +144,12 @@ def write_image_body(output_image, inputs, lengths):
                 # Read next block
                 block = f.read(1024)
 
-            # Append some bytes for hash calculation if not multiple of 64 bytes
-            # Pad with 0xFF the end
-            last_block_size = length % 64
-            
-            if last_block_size != 0:
-                k.update(b'\xFF' * (64 - last_block_size))
+    # Append some bytes at the end for hash calculation if not multiple
+    # of 64 bytes; pad with 0xFF at the end
+    last_block_size = sum(lengths) % 64
+    
+    if last_block_size != 0:
+        k.update(b'\xFF' * (64 - last_block_size))
 
     # Seek back to hash position and write hash to output file
     num_lengths = len(lengths) * 4
