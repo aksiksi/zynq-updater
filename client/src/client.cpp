@@ -63,7 +63,7 @@ void send_update_check(tcp::socket& socket) {
     socket.send(asio::buffer(data));
 }
 
-bool receive_image(tcp::socket& socket, uint32_t image_size) {
+void receive_image(tcp::socket& socket, uint32_t image_size) {
     // Open output file for received image
     std::ofstream out_file (IMAGE_PATH, std::ios::binary | std::ios::out);
 
@@ -220,6 +220,8 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
 }
 
 void read_image_header(const char* path) {
+    // NOTE: function assumes image has exactly 3 fields!
+    // i.e., BOOT.bin, image.ub, and application (in that order)
     std::ifstream image (path, std::ios::binary | std::ios::in);
     uint32_t seek_pos = 1; // Skip length byte at start of file
     
@@ -234,8 +236,15 @@ void read_image_header(const char* path) {
     image.read(reinterpret_cast<char *>(&image_header.s3), 4);
     
     seek_pos += 4;
-    image.seekg(seek_pos);
-    image.read(&image_header.hash[0], HASH_SIZE);
+    
+    // Read in hash byte-by-byte
+    uint8_t byte;
+    
+    for (int i = 0; i < HASH_SIZE; i++) {
+        image.seekg(seek_pos + i);
+        image.read(reinterpret_cast<char *>(&byte), 1);
+        image_header.hash.push_back(byte);
+    }
 
     image.close();
 }
@@ -284,15 +293,58 @@ bool decrypt_image() {
     return true;
 }
 
-bool validate_hashes(std::vector<std::string>& hashes) {
+std::string compute_image_hash() {
+    // NOTE: this function assumes 3 fields in the image header
+    
+    // Read in image header
     read_image_header(DECRYPTED_IMAGE_PATH);
 
-    // TODO: Compute update image hash using SHA-3 core
+    // Open image and seek to correct start position in file
+    std::ifstream image (DECRYPTED_IMAGE_PATH, std::ios::binary | std::ios::in);
+    image.seekg(1 + 12 + HASH_SIZE); // See server/update_image.py for header structure
+
+    // Read out the file contents for hashing
+    std::ostringstream oss;
+    oss << image.rdbuf();
+    std::string content = oss.str();
+    image.close();
+
+    SHA3Driver driver;
+    
+    // Compute hash
+    return driver.compute_hash(content, false);
+}
+
+bool validate_hashes(std::vector<std::string>& hashes) {
+    std::string hash = compute_image_hash();
+
+    if (hash.compare(image_header.hash) != 0) {
+        std::cout << "Header and content hashes are different!" << std::endl;
+    }
 
     // Check confirming hashes against update image hash
-    for (std::string& hash: hashes) {
-        if (hash.compare(image_header.hash) == 0) {
+    for (std::string& h: hashes) {
+        if (h.compare(image_header.hash) != 0) {
             std::cout << "Hash mismatch detected!" << std::endl;
+
+            #ifdef DEBUG
+                // Print out all 3 hashes
+                for (int i = 0; i < HASH_SIZE; i++)
+                    std::cout << std::hex << (int)hash.at(i) << " ";
+                
+                std::cout << std::endl;
+        
+                for (int i = 0; i < HASH_SIZE; i++)
+                    std::cout << std::hex << (int)hashes[0].at(i) << " ";
+            
+                std::cout << std::endl;
+        
+                for (int i = 0; i < HASH_SIZE; i++)
+                    std::cout << std::hex << (int)image_header.hash.at(i) << " ";
+            
+                std::cout << std::endl;
+            #endif
+
             return false;
         }
     }
