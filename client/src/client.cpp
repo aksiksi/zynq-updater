@@ -2,7 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include <ctime>
+#include <chrono>
 
 #define ASIO_STANDALONE // Do not use Boost
 #include "asio.hpp"
@@ -386,9 +386,7 @@ int main(int argc, char** argv) {
         hash.reserve(64);
 
         // Start timing the protocol
-        double duration = 0;
-        std::time_t start, end;
-        std::time(&start);
+        const auto start = std::chrono::high_resolution_clock::now();
 
         // Run protocol for GU
         bool success = run_protocol(socket, Org::GU, hash);
@@ -421,10 +419,11 @@ int main(int argc, char** argv) {
             std::cout << "Executing update..." << std::endl;
             execute_update();
             
-            std::time(&end);
-            duration = std::difftime(end, start);
+            // Compute time elapsed for current run
+            const auto end = std::chrono::high_resolution_clock::now();
+            const auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
             
-            std::cout << "Protocol completed successfully in " << duration << " seconds and all hashes match!" << std::endl;
+            std::cout << std::dec << "Protocol completed successfully in " << (duration/1000000.0) << " seconds and all hashes match!" << std::endl;
         } else {
             std::cout << "Protocol failed!" << std::endl;
         }
