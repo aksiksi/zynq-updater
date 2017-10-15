@@ -407,15 +407,29 @@ int main(int argc, char** argv) {
 
         socket.close();
 
+        // Auth completed
+        const auto t2 = std::chrono::high_resolution_clock::now();
+
         if (success) {
-            std::cout << "Authentication completed successfully!" << std::endl;
-            
+            const auto auth_time = std::chrono::duration_cast<std::chrono::microseconds>(t2 - start).count() / 1000000.0;
+            std::cout << "Authentication completed successfully in " << auth_time << std::endl;
+
             // Decrypt the update image (if applicable)
             decrypt_image();
+
+            const auto t3 = std::chrono::high_resolution_clock::now();
+            const auto dec_time = std::chrono::duration_cast<std::chrono::microseconds>(t3 - t2).count() / 1000000.0;
+            std::cout << "Image decrypted in " << dec_time << std::endl;
         }
-            
+
+        const auto t3 = std::chrono::high_resolution_clock::now();
+
         // Check all received hashes
         if (success && hashes.size() == NUM_ORGS-1 && validate_hashes(hashes)) {
+            const auto t4 = std::chrono::high_resolution_clock::now();
+            const auto hash_time = std::chrono::duration_cast<std::chrono::microseconds>(t4 - t3).count() / 1000000.0;
+            std::cout << "Hash validation completed in " << hash_time << std::endl;
+
             std::cout << "Executing update..." << std::endl;
             execute_update();
             
