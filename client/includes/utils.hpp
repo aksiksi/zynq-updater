@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 // Converts from a 32-bit int to a 4 byte array
 union {

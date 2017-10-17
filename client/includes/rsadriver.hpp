@@ -21,9 +21,8 @@
 #define RSA_CHUNK_SIZE     64 // bytes
 #define PKCS1_CHUNK_SIZE   53 // bytes
 
-// PKCS#1 1.5 padding: 00 || 02 || 8 bytes of junk || 00
+// PKCS#1 1.5 padding size
 #define PKCS1_PAD_SIZE 11
-const char PKCS1_PADDING[PKCS1_PAD_SIZE] = {0x00, 0x02, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x00};
 
 // Indices of required keys as configured in PL (see RSA AXI driver implementation)
 enum RSAKey {

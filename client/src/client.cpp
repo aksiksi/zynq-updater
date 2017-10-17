@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <chrono>
+#include <cstdlib>
 
 #define ASIO_STANDALONE // Do not use Boost
 #include "asio.hpp"
@@ -11,6 +12,7 @@
 
 #include "sha3driver.hpp"
 #include "rsadriver.hpp"
+#include "utils.hpp"
 
 using asio::ip::tcp;
 
@@ -28,6 +30,18 @@ enum Org {
     GU,
     GC
 };
+
+void set_random_seed() {
+    /**
+     * Gets a random 32-bit seed value from /dev/urandom on Linux and then
+     * sets it globally.
+     */
+    std::ifstream random ("/dev/urandom", std::ios::binary | std::ios::in);
+    uint32_t seed;
+    random.read(reinterpret_cast<char *>(&seed), sizeof seed);
+    random.close();
+    std::srand(seed);
+}
 
 void print_binary_string(std::string& str) {
     for (int i = 0; i < str.size(); i++)
@@ -93,6 +107,9 @@ void receive_image(tcp::socket& socket, uint32_t image_size) {
 bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     bool valid;
     
+    // Sets a global random seed from /dev/urandom
+    set_random_seed();
+    
     // Receive buffers
     std::string data;
     data.reserve(512);
@@ -136,9 +153,10 @@ bool run_protocol(tcp::socket& socket, Org org, std::string& hash) {
     DeviceChallenge dc;
     dc.set_id(ID);
     dc.set_ng(ng);
-
-    const uint32_t nd = ng >> 1;
-    dc.set_nd(nd); // Generate a "random" nonce
+    
+    // Generate a random device nonce, N_D
+    const uint32_t nd = std::rand();
+    dc.set_nd(nd);
     
     dc.SerializeToString(&data);
 

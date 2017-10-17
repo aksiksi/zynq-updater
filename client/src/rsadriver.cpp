@@ -1,5 +1,21 @@
 #include "rsadriver.hpp"
 
+#include <cstdlib>
+
+// PKCS#1 1.5 padding: 00 || 02 || 8 bytes of salt || 00
+char PKCS1_PADDING[PKCS1_PAD_SIZE] = {0x00, 0x02, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x00};
+
+inline void randomize_pkcs1_padding() {
+    /**
+     * Randomizes the 8-byte salt in the PKCS#1 padding array.
+     * 
+     * NOTE: This function *assumes* that std::rand() has been properly
+     * seeded elsewhere.
+     */
+    for (int i = 2; i < 10; i++)
+        PKCS1_PADDING[i] = static_cast<char>(std::rand() & 0xFF);
+}
+
 std::string RSADriver::compute_rsa(const std::string& data, RSAKey key) {
     /**
      * Given a plaintext or ciphertext chunk as string, either encrypts or decrypts
@@ -135,8 +151,9 @@ std::string RSADriver::encrypt(const std::string& plaintext, RSAKey key) {
         // Get plaintext chunk
         const std::string& chunk = plaintext.substr(i * PKCS1_CHUNK_SIZE, PKCS1_CHUNK_SIZE);
 
-        // Add PKCS1 padding to the chunk
-        padded.append(PKCS1_PADDING, PKCS1_PAD_SIZE);
+        // Add PKCS1 padding to the chunk after randomizing the 8 byte salt
+        randomize_pkcs1_padding();
+        padded.append(PKCS1_PADDING);
 
         // Add actual data
         padded.append(chunk);
